@@ -3,195 +3,683 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>HR Training Portal | Advanced</title>
+<title>HR Training Portal | Enterprise</title>
 
 <script src="https://cdn.tailwindcss.com"></script>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
 
 <style>
-body{background:#0f172a;color:#e2e8f0}
-.glass{background:rgba(30,41,59,.7);backdrop-filter:blur(18px);border:1px solid rgba(255,255,255,.08)}
-.fade{animation:fade .35s ease}
-@keyframes fade{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
-.big-btn{padding:14px;font-size:17px}
-.progress{height:6px;border-radius:10px}
-.table-row:hover{background:rgba(255,255,255,.05)}
+body{
+    background:#0b1120;
+    color:#e2e8f0;
+    font-family:'Inter',sans-serif;
+}
+.glass{
+    background:rgba(15,23,42,.75);
+    backdrop-filter:blur(20px);
+    border:1px solid rgba(255,255,255,.06);
+}
+.nav-btn{
+    transition:.3s;
+}
+.nav-btn:hover{
+    background:rgba(255,255,255,.05);
+}
+.card-hover:hover{
+    transform:translateY(-4px);
+    transition:.3s;
+}
+.fade{
+    animation:fade .35s ease;
+}
+@keyframes fade{
+    from{opacity:0;transform:translateY(12px)}
+    to{opacity:1;transform:translateY(0)}
+}
+.table-row:hover{
+    background:rgba(255,255,255,.04);
+}
+.badge{
+    padding:4px 10px;
+    border-radius:20px;
+    font-size:11px;
+    font-weight:600;
+}
 </style>
 </head>
 
 <body class="min-h-screen flex flex-col">
 
-<header class="glass p-4 text-center text-xl font-bold">
-HR Training Portal
+<header class="glass p-4 flex justify-between items-center shadow-xl">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 bg-gradient-to-br from-cyan-500 to-blue-600 rounded-lg flex items-center justify-center">
+<i class="fa-solid fa-layer-group"></i>
+</div>
+<div>
+<div class="font-bold text-white">HR Training Portal</div>
+<div class="text-xs text-cyan-400">Enterprise Edition</div>
+</div>
+</div>
+<div id="userRole" class="text-sm text-slate-400"></div>
 </header>
 
-<div class="flex justify-center gap-2 p-3 text-sm">
-<button onclick="switchTab('register')" class="bg-cyan-600 px-4 py-2 rounded">ลงทะเบียน</button>
-<button onclick="switchTab('checkin')" class="bg-slate-700 px-4 py-2 rounded">เช็คชื่อ</button>
-<button onclick="switchTab('admin')" class="bg-slate-700 px-4 py-2 rounded">Admin</button>
+<!-- NAV -->
+<div class="flex justify-center gap-2 p-3 text-sm border-b border-white/5">
+<button onclick="switchTab('register')" class="nav-btn px-4 py-2 rounded">ลงทะเบียน</button>
+<button onclick="switchTab('checkin')" class="nav-btn px-4 py-2 rounded">เช็คชื่อ</button>
+<button onclick="switchTab('admin')" class="nav-btn px-4 py-2 rounded">Admin</button>
 </div>
 
-<main class="flex-1 p-4">
+<main class="flex-1 p-5 space-y-6">
 
 <!-- REGISTER -->
-<section id="page-register">
-<div class="glass p-6 rounded-xl max-w-md mx-auto fade">
-<h2 class="text-lg font-bold mb-4">ลงทะเบียนพนักงานใหม่</h2>
-<form id="regForm" class="space-y-3">
-<input name="prefix" placeholder="คำนำหน้า" class="w-full p-3 rounded bg-slate-800">
-<input required name="name" placeholder="ชื่อ-นามสกุล" class="w-full p-3 rounded bg-slate-800">
-<input required name="nickname" placeholder="ชื่อเล่น" class="w-full p-3 rounded bg-slate-800">
-<input required name="team" placeholder="ทีม" class="w-full p-3 rounded bg-slate-800">
-<input required name="phone" placeholder="เบอร์โทร" class="w-full p-3 rounded bg-slate-800">
-<input name="dept" placeholder="แผนก" class="w-full p-3 rounded bg-slate-800">
-<input name="recruiter" placeholder="ผู้แนะนำ" class="w-full p-3 rounded bg-slate-800">
-<button class="big-btn w-full bg-cyan-600 rounded">บันทึก</button>
+<section id="page-register" class="fade">
+<div class="glass p-6 rounded-2xl max-w-xl mx-auto shadow-xl">
+<h2 class="text-lg font-bold mb-5 text-white">ลงทะเบียนพนักงานใหม่</h2>
+<form id="regForm" class="grid md:grid-cols-2 gap-4">
+<input name="prefix" placeholder="คำนำหน้า" class="p-3 rounded bg-slate-800">
+<input required name="name" placeholder="ชื่อ-นามสกุล" class="p-3 rounded bg-slate-800">
+<input required name="nickname" placeholder="ชื่อเล่น" class="p-3 rounded bg-slate-800">
+<input required name="team" placeholder="ทีม" class="p-3 rounded bg-slate-800">
+<input required name="phone" placeholder="เบอร์โทร" class="p-3 rounded bg-slate-800">
+<input name="dept" placeholder="แผนก" class="p-3 rounded bg-slate-800">
+<input name="recruiter" placeholder="ผู้แนะนำ" class="p-3 rounded bg-slate-800 md:col-span-2">
+<button class="md:col-span-2 bg-cyan-600 py-3 rounded-xl font-semibold hover:bg-cyan-500 transition">
+บันทึกข้อมูล
+</button>
 </form>
 </div>
 </section>
 
 <!-- CHECKIN -->
-<section id="page-checkin" class="hidden">
-<div class="glass p-6 rounded-xl max-w-md mx-auto text-center fade">
-<h2 class="text-lg font-bold mb-4">เช็คชื่อเข้าอบรม</h2>
-<input id="checkPhone" placeholder="กรอกเบอร์โทร" class="w-full p-4 rounded bg-slate-800 text-center text-lg mb-4">
-<button onclick="checkUser()" class="big-btn w-full bg-emerald-600 rounded mb-4">ตรวจสอบ</button>
+<section id="page-checkin" class="hidden fade">
+<div class="glass p-6 rounded-2xl max-w-md mx-auto text-center shadow-xl">
+<h2 class="text-lg font-bold mb-5">เช็คชื่อเข้าอบรม</h2>
+<input id="checkPhone" placeholder="กรอกเบอร์โทร" 
+class="w-full p-4 rounded-xl bg-slate-800 text-center text-lg mb-4">
+<button onclick="checkUser()" 
+class="w-full bg-emerald-600 py-3 rounded-xl font-semibold hover:bg-emerald-500 transition">
+ตรวจสอบข้อมูล
+</button>
 
-<div id="userCard" class="hidden text-left mt-4 space-y-4">
-<div id="userName" class="font-bold text-lg"></div>
-<div id="userTeam" class="text-sm text-slate-400"></div>
-
-<div>
-Day 1
-<div class="progress bg-slate-700 mt-1"><div id="p1" class="progress bg-cyan-500 w-0"></div></div>
-<button onclick="doCheck(1)" class="big-btn w-full bg-cyan-600 rounded mt-2">เช็คชื่อ Day 1</button>
-</div>
-
-<div>
-Day 2
-<div class="progress bg-slate-700 mt-1"><div id="p2" class="progress bg-cyan-500 w-0"></div></div>
-<button onclick="doCheck(2)" class="big-btn w-full bg-cyan-600 rounded mt-2">เช็คชื่อ Day 2</button>
-</div>
-
-<div>
-Day 3
-<div class="progress bg-slate-700 mt-1"><div id="p3" class="progress bg-cyan-500 w-0"></div></div>
-<button onclick="doCheck(3)" class="big-btn w-full bg-cyan-600 rounded mt-2">เช็คชื่อ Day 3</button>
-</div>
-
-</div>
+<div id="userCard" class="hidden mt-6 space-y-4 text-left"></div>
 </div>
 </section>
 
 <!-- ADMIN -->
-<section id="page-admin" class="hidden">
-<div id="adminLogin" class="glass p-6 rounded-xl max-w-sm mx-auto text-center fade">
-<h3 class="font-bold mb-4">Admin Login</h3>
-<input id="adminPass" type="password" placeholder="Password" class="w-full p-3 rounded bg-slate-800 mb-4">
-<button onclick="adminAccess()" class="big-btn w-full bg-red-600 rounded">เข้าสู่ระบบ</button>
+<section id="page-admin" class="hidden fade space-y-6">
+
+<!-- LOGIN -->
+<div id="adminLogin" class="glass p-6 rounded-2xl max-w-sm mx-auto text-center shadow-xl">
+<h3 class="font-bold mb-4 text-lg">เข้าสู่ระบบ</h3>
+<input id="adminPass" type="password" 
+placeholder="รหัสผ่าน" 
+class="w-full p-3 rounded-xl bg-slate-800 mb-4">
+<button onclick="adminAccess()" 
+class="w-full bg-red-600 py-3 rounded-xl font-semibold hover:bg-red-500 transition">
+เข้าสู่ระบบ
+</button>
 </div>
 
-<div id="adminPanel" class="hidden mt-6">
-<div class="glass p-4 rounded-xl overflow-auto">
+<!-- DASHBOARD -->
+<div id="adminPanel" class="hidden space-y-6">
+
+<!-- DASHBOARD CARDS -->
+<div class="grid md:grid-cols-5 gap-4">
+
+<div class="glass p-4 rounded-xl card-hover">
+<div class="text-xs text-slate-400">ทั้งหมด</div>
+<div id="statTotal" class="text-2xl font-bold text-white">0</div>
+</div>
+
+<div class="glass p-4 rounded-xl card-hover">
+<div class="text-xs text-slate-400">Active</div>
+<div id="statActive" class="text-2xl font-bold text-blue-400">0</div>
+</div>
+
+<div class="glass p-4 rounded-xl card-hover">
+<div class="text-xs text-slate-400">Passed</div>
+<div id="statPassed" class="text-2xl font-bold text-emerald-400">0</div>
+</div>
+
+<div class="glass p-4 rounded-xl card-hover">
+<div class="text-xs text-slate-400">Dropout</div>
+<div id="statDropout" class="text-2xl font-bold text-red-400">0</div>
+</div>
+
+<div class="glass p-4 rounded-xl card-hover">
+<div class="text-xs text-slate-400">Resigned</div>
+<div id="statResigned" class="text-2xl font-bold text-orange-400">0</div>
+</div>
+
+</div>
+
+<!-- CHART -->
+<div class="glass p-6 rounded-2xl shadow-xl">
+<h3 class="font-semibold mb-4">สถิติภาพรวม</h3>
+<canvas id="statusChart" height="100"></canvas>
+</div>
+
+<!-- FILTER -->
+<div class="glass p-4 rounded-xl shadow-xl grid md:grid-cols-4 gap-4">
+<input id="filterName" placeholder="ค้นหาชื่อ..." class="p-3 rounded bg-slate-800">
+<input id="filterTeam" placeholder="ทีม..." class="p-3 rounded bg-slate-800">
+<select id="filterStatus" class="p-3 rounded bg-slate-800">
+<option value="all">สถานะทั้งหมด</option>
+<option value="Active">Active</option>
+<option value="Passed">Passed</option>
+<option value="Resigned">Resigned</option>
+<option value="New Job">New Job</option>
+</select>
+<button onclick="applyFilters()" 
+class="bg-cyan-600 rounded-xl font-semibold hover:bg-cyan-500 transition">
+กรองข้อมูล
+</button>
+</div>
+
+<!-- TABLE -->
+<div class="glass rounded-2xl shadow-xl overflow-auto">
 <table class="w-full text-sm">
-<thead class="bg-slate-800 text-xs">
+<thead class="bg-slate-900 text-xs uppercase text-slate-400">
 <tr>
-<th class="p-2">ชื่อ</th>
-<th class="p-2">ทีม</th>
-<th class="p-2">เข้าเรียน</th>
-<th class="p-2">สถานะ</th>
-<th class="p-2">จัดการ</th>
+<th class="p-3">ชื่อ</th>
+<th class="p-3">ทีม</th>
+<th class="p-3">เข้าเรียน</th>
+<th class="p-3">สถานะ</th>
+<th class="p-3">จัดการ</th>
 </tr>
 </thead>
 <tbody id="adminTable"></tbody>
 </table>
 </div>
+
+<!-- EXPORT -->
+<div class="glass p-4 rounded-xl shadow-xl text-right">
+<button onclick="openPaymentExport()" 
+class="bg-emerald-600 px-6 py-3 rounded-xl font-semibold hover:bg-emerald-500 transition">
+Export ทำจ่าย
+</button>
+</div>
+
 </div>
 </section>
 
-</main>
+</main><script>
 
-<script>
 const API_URL="https://script.google.com/macros/s/AKfycbyYYauRspNoRvkhUWKZh4c5Hp1TzhxWGu_T96TvPPMZ6p1DHJqh30Azzi_PrEcGn9dy/exec";
 
-function switchTab(t){
-["register","checkin","admin"].forEach(p=>document.getElementById("page-"+p).classList.add("hidden"))
-document.getElementById("page-"+t).classList.remove("hidden")
+let adminData=[];
+let currentRole=null; // superadmin / hr
+let chartInstance=null;
+
+function switchTab(tab){
+document.querySelectorAll("section").forEach(s=>s.classList.add("hidden"));
+document.getElementById("page-"+tab).classList.remove("hidden");
 }
 
 async function api(payload){
-const r=await fetch(API_URL,{method:"POST",body:JSON.stringify(payload)})
-return await r.json()
+const r=await fetch(API_URL,{method:"POST",body:JSON.stringify(payload)});
+return await r.json();
 }
 
+//////////////////////////////////////////////////////
+// REGISTER
+//////////////////////////////////////////////////////
+
 regForm.addEventListener("submit",async e=>{
-e.preventDefault()
-const data=Object.fromEntries(new FormData(e.target))
-const r=await api({action:"register",...data})
-if(r.status==="success"){Swal.fire("สำเร็จ","ลงทะเบียนแล้ว","success");e.target.reset()}
-else Swal.fire("ผิดพลาด",r.message,"error")
-})
+e.preventDefault();
+const data=Object.fromEntries(new FormData(e.target));
+const r=await api({action:"register",...data});
+if(r.status==="success"){
+Swal.fire("สำเร็จ","ลงทะเบียนเรียบร้อย","success");
+e.target.reset();
+}else{
+Swal.fire("ผิดพลาด",r.message,"error");
+}
+});
+
+//////////////////////////////////////////////////////
+// CHECKIN
+//////////////////////////////////////////////////////
 
 async function checkUser(){
-const phone=checkPhone.value
-const r=await api({action:"login",phone})
-if(r.status!=="success"){Swal.fire("ไม่พบข้อมูล","","error");return}
-const u=r.data
-userCard.classList.remove("hidden")
-userName.innerText=u.name+" ("+u.nickname+")"
-userTeam.innerText="ทีม: "+u.team+" | แผนก: "+u.dept
-updateProgress(u)
+const phone=checkPhone.value;
+const r=await api({action:"login",phone});
+if(r.status!=="success"){
+Swal.fire("ไม่พบข้อมูล","","error");
+return;
+}
+renderUserCard(r.data);
+}
+
+function renderUserCard(u){
+userCard.classList.remove("hidden");
+userCard.innerHTML=`
+<div class="font-bold text-lg">${u.name} (${u.nickname})</div>
+<div class="text-sm text-slate-400">ทีม: ${u.team} | แผนก: ${u.dept}</div>
+
+${renderCheckBlock(1,u.d1)}
+${renderCheckBlock(2,u.d2)}
+${renderCheckBlock(3,u.d3)}
+`;
+}
+
+function renderCheckBlock(day,val){
+return `
+<div>
+<div class="flex justify-between text-sm">
+<span>Day ${day}</span>
+<span class="text-cyan-400">${val?val:"ยังไม่เช็ค"}</span>
+</div>
+<button onclick="doCheck(${day})"
+class="w-full bg-cyan-600 py-2 mt-2 rounded-xl hover:bg-cyan-500 transition">
+เช็คชื่อ Day ${day}
+</button>
+</div>
+`;
 }
 
 async function doCheck(day){
-const phone=checkPhone.value
-const r=await api({action:"checkin",phone,day})
-if(r.status==="success"){Swal.fire({icon:"success",title:"เช็คชื่อสำเร็จ",timer:1200,showConfirmButton:false});checkUser()}
-else Swal.fire("แจ้งเตือน",r.message,"warning")
+const phone=checkPhone.value;
+const r=await api({action:"checkin",phone,day});
+if(r.status==="success"){
+Swal.fire({icon:"success",title:"เช็คชื่อสำเร็จ",timer:1200,showConfirmButton:false});
+checkUser();
+}else{
+Swal.fire("แจ้งเตือน",r.message,"warning");
+}
 }
 
-function updateProgress(u){
-p1.style.width=u.d1?"100%":"0%"
-p2.style.width=u.d2?"100%":"0%"
-p3.style.width=u.d3?"100%":"0%"
-}
+//////////////////////////////////////////////////////
+// ADMIN LOGIN (Role Control)
+//////////////////////////////////////////////////////
 
 async function adminAccess(){
-const pass=adminPass.value
-const r=await api({action:"get_admin",pass})
-if(r.status!=="success"){Swal.fire("รหัสผิด","","error");return}
-adminLogin.classList.add("hidden")
-adminPanel.classList.remove("hidden")
-renderAdmin(r.data)
+const pass=adminPass.value;
+
+if(pass==="admin9sing"){
+currentRole="superadmin";
+}else if(pass==="hr2026"){
+currentRole="hr";
+}else{
+Swal.fire("รหัสผิด","","error");
+return;
 }
 
-function renderAdmin(data){
-adminTable.innerHTML=""
+const r=await api({action:"get_admin",pass:"admin9sing"});
+if(r.status!=="success"){
+Swal.fire("ไม่สามารถดึงข้อมูลได้","","error");
+return;
+}
+
+adminData=r.data;
+adminLogin.classList.add("hidden");
+adminPanel.classList.remove("hidden");
+
+userRole.innerText="Role: "+(currentRole==="superadmin"?"Super Admin":"HR");
+
+updateDashboard();
+renderTable(adminData);
+}
+
+//////////////////////////////////////////////////////
+// DASHBOARD
+//////////////////////////////////////////////////////
+
+function updateDashboard(){
+
+let total=adminData.length;
+let active=0,passed=0,dropout=0,resigned=0;
+
+adminData.forEach(u=>{
+let attended=0;
+if(u.d1)attended++;
+if(u.d2)attended++;
+if(u.d3)attended++;
+
+if(u.status==="Active")active++;
+if(u.status==="Passed"||attended===3)passed++;
+if(["Resigned","New Job"].includes(u.status))resigned++;
+if(attended>0 && attended<3 && ["Resigned","New Job"].includes(u.status))dropout++;
+});
+
+statTotal.innerText=total;
+statActive.innerText=active;
+statPassed.innerText=passed;
+statDropout.innerText=dropout;
+statResigned.innerText=resigned;
+
+renderChart(active,passed,dropout,resigned);
+}
+
+function renderChart(active,passed,dropout,resigned){
+
+if(chartInstance) chartInstance.destroy();
+
+chartInstance=new Chart(statusChart,{
+type:"pie",
+data:{
+labels:["Active","Passed","Dropout","Resigned"],
+datasets:[{
+data:[active,passed,dropout,resigned],
+backgroundColor:["#3b82f6","#10b981","#ef4444","#f97316"]
+}]
+},
+options:{
+plugins:{legend:{labels:{color:"#e2e8f0"}}}
+}
+});
+}
+
+//////////////////////////////////////////////////////
+// FILTER
+//////////////////////////////////////////////////////
+
+function applyFilters(){
+const name=filterName.value.toLowerCase();
+const team=filterTeam.value.toLowerCase();
+const status=filterStatus.value;
+
+let filtered=adminData.filter(u=>{
+let matchName=u.name.toLowerCase().includes(name) ||
+u.nickname.toLowerCase().includes(name);
+
+let matchTeam=u.team.toLowerCase().includes(team);
+
+let matchStatus=status==="all"||u.status===status;
+
+return matchName && matchTeam && matchStatus;
+});
+
+renderTable(filtered);
+}
+
+//////////////////////////////////////////////////////
+// TABLE RENDER
+//////////////////////////////////////////////////////
+
+function renderTable(data){
+adminTable.innerHTML="";
+
 data.forEach(u=>{
-let count=0;if(u.d1)count++;if(u.d2)count++;if(u.d3)count++;
-let statusColor="text-blue-400"
-if(u.status==="Passed")statusColor="text-emerald-400"
-if(["Resigned","New Job"].includes(u.status))statusColor="text-red-400"
+
+let attended=0;
+if(u.d1)attended++;
+if(u.d2)attended++;
+if(u.d3)attended++;
+
+let statusColor="text-blue-400";
+if(u.status==="Passed")statusColor="text-emerald-400";
+if(["Resigned","New Job"].includes(u.status))statusColor="text-red-400";
+
+let actionButtons="";
+
+if(currentRole==="superadmin"){
+actionButtons=`
+<button onclick="openEdit(${u.row})" class="text-cyan-400 mr-2"><i class="fa fa-pen"></i></button>
+<button onclick="deleteUser(${u.row})" class="text-red-400"><i class="fa fa-trash"></i></button>
+`;
+}else{
+actionButtons=`
+<button onclick="openEdit(${u.row})" class="text-cyan-400"><i class="fa fa-pen"></i></button>
+`;
+}
 
 adminTable.innerHTML+=`
-<tr class="table-row border-b border-slate-700">
-<td class="p-2">${u.prefix||""} ${u.name}<div class="text-xs text-slate-400">${u.nickname}</div></td>
-<td class="p-2">${u.team}</td>
-<td class="p-2 text-center">${count}/3</td>
-<td class="p-2 ${statusColor}">${u.status}</td>
-<td class="p-2 text-center">
-<button onclick="deleteUser(${u.row})" class="text-red-400"><i class="fa fa-trash"></i></button>
+<tr class="table-row border-b border-slate-800">
+<td class="p-3">
+${u.prefix||""} ${u.name}
+<div class="text-xs text-slate-400">${u.nickname}</div>
 </td>
-</tr>`
-})
+<td class="p-3">${u.team}</td>
+<td class="p-3 text-center">${attended}/3</td>
+<td class="p-3 ${statusColor}">${u.status}</td>
+<td class="p-3 text-center">${actionButtons}</td>
+</tr>
+`;
+});
+}
+
+//////////////////////////////////////////////////////
+// EDIT
+//////////////////////////////////////////////////////
+
+function openEdit(row){
+const u=adminData.find(x=>x.row===row);
+Swal.fire({
+title:"แก้ไขสถานะ",
+input:"select",
+inputOptions:{
+Active:"Active",
+Passed:"Passed",
+Resigned:"Resigned",
+"New Job":"New Job"
+},
+inputValue:u.status,
+showCancelButton:true
+}).then(async result=>{
+if(result.isConfirmed){
+await api({action:"admin_update",row,status:result.value,team:u.team,note:u.note||""});
+adminAccess();
+}
+});
 }
 
 async function deleteUser(row){
-if(!confirm("ลบข้อมูล?"))return
-await api({action:"admin_delete",row})
-adminAccess()
+if(currentRole!=="superadmin")return;
+if(!confirm("ยืนยันการลบ?"))return;
+await api({action:"admin_delete",row});
+adminAccess();
 }
+
+//////////////////////////////////////////////////////
+// EXPORT PAYMENT
+//////////////////////////////////////////////////////
+
+function openPaymentExport(){
+
+let passedUsers=adminData.filter(u=>{
+let attended=0;
+if(u.d1)attended++;
+if(u.d2)attended++;
+if(u.d3)attended++;
+return attended===3 && u.status==="Passed";
+});
+
+let text="ลำดับ\tชื่อ\tทีม\n";
+
+passedUsers.forEach((u,i)=>{
+text+=`${i+1}\t${u.name}\t${u.team}\n`;
+});
+
+Swal.fire({
+title:"Export ทำจ่าย",
+html:`<textarea style="width:100%;height:200px;background:#0f172a;color:white">${text}</textarea>`,
+width:600
+});
+}
+
+  </script><script>
+
+//////////////////////////////////////////////////////
+// LOADING OVERLAY (Premium UX)
+//////////////////////////////////////////////////////
+
+const loadingOverlay=document.createElement("div");
+loadingOverlay.innerHTML=`
+<div id="loadingScreen" 
+class="hidden fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-50">
+<div class="animate-spin rounded-full h-16 w-16 border-b-2 border-cyan-400"></div>
+</div>`;
+document.body.appendChild(loadingOverlay);
+
+function showLoading(){ document.getElementById("loadingScreen").classList.remove("hidden"); }
+function hideLoading(){ document.getElementById("loadingScreen").classList.add("hidden"); }
+
+//////////////////////////////////////////////////////
+// OVERRIDE API WITH LOADING
+//////////////////////////////////////////////////////
+
+const originalApi=api;
+api=async function(payload){
+showLoading();
+const r=await originalApi(payload);
+hideLoading();
+return r;
+};
+
+//////////////////////////////////////////////////////
+// MOBILE CARD VIEW AUTO SWITCH
+//////////////////////////////////////////////////////
+
+function isMobile(){
+return window.innerWidth < 768;
+}
+
+window.addEventListener("resize",()=>{
+if(currentRole) renderTable(adminData);
+});
+
+//////////////////////////////////////////////////////
+// OVERRIDE TABLE RENDER FOR MOBILE
+//////////////////////////////////////////////////////
+
+const originalRenderTable=renderTable;
+renderTable=function(data){
+
+if(isMobile()){
+renderMobileCards(data);
+}else{
+originalRenderTable(data);
+}
+
+};
+
+function renderMobileCards(data){
+
+adminTable.innerHTML="";
+
+data.forEach(u=>{
+
+let attended=0;
+if(u.d1)attended++;
+if(u.d2)attended++;
+if(u.d3)attended++;
+
+let statusColor="text-blue-400";
+if(u.status==="Passed")statusColor="text-emerald-400";
+if(["Resigned","New Job"].includes(u.status))statusColor="text-red-400";
+
+let actionButtons="";
+
+if(currentRole==="superadmin"){
+actionButtons=`
+<div class="flex gap-4 mt-3">
+<button onclick="openEdit(${u.row})" class="text-cyan-400"><i class="fa fa-pen"></i></button>
+<button onclick="deleteUser(${u.row})" class="text-red-400"><i class="fa fa-trash"></i></button>
+</div>`;
+}else{
+actionButtons=`
+<div class="flex gap-4 mt-3">
+<button onclick="openEdit(${u.row})" class="text-cyan-400"><i class="fa fa-pen"></i></button>
+</div>`;
+}
+
+adminTable.innerHTML+=`
+<tr>
+<td class="p-3">
+<div class="glass p-4 rounded-xl mb-4">
+<div class="font-bold">${u.prefix||""} ${u.name}</div>
+<div class="text-xs text-slate-400">${u.nickname}</div>
+<div class="text-sm mt-2">ทีม: ${u.team}</div>
+<div class="text-sm">เข้าเรียน: ${attended}/3</div>
+<div class="${statusColor} mt-1 font-semibold">${u.status}</div>
+${actionButtons}
+</div>
+</td>
+</tr>
+`;
+});
+
+}
+
+//////////////////////////////////////////////////////
+// ADVANCED DROPOUT HIGHLIGHT
+//////////////////////////////////////////////////////
+
+const originalUpdateDashboard=updateDashboard;
+updateDashboard=function(){
+
+originalUpdateDashboard();
+
+adminData.forEach(u=>{
+let attended=0;
+if(u.d1)attended++;
+if(u.d2)attended++;
+if(u.d3)attended++;
+
+if(attended>0 && attended<3 && ["Resigned","New Job"].includes(u.status)){
+console.log("Dropout:",u.name);
+}
+});
+
+};
+
+//////////////////////////////////////////////////////
+// DATE FILTER (Registration Date)
+//////////////////////////////////////////////////////
+
+const dateFilter=document.createElement("input");
+dateFilter.type="date";
+dateFilter.id="filterDate";
+dateFilter.className="p-3 rounded bg-slate-800";
+filterStatus.parentNode.insertBefore(dateFilter,filterStatus);
+
+function applyFilters(){
+
+const name=filterName.value.toLowerCase();
+const team=filterTeam.value.toLowerCase();
+const status=filterStatus.value;
+const dateValue=dateFilter.value;
+
+let filtered=adminData.filter(u=>{
+
+let matchName=u.name.toLowerCase().includes(name) ||
+u.nickname.toLowerCase().includes(name);
+
+let matchTeam=u.team.toLowerCase().includes(team);
+
+let matchStatus=status==="all"||u.status===status;
+
+let matchDate=true;
+if(dateValue){
+matchDate=u.timestamp.includes(dateValue.split("-").reverse().join("/"));
+}
+
+return matchName && matchTeam && matchStatus && matchDate;
+
+});
+
+renderTable(filtered);
+
+}
+
+//////////////////////////////////////////////////////
+// PREMIUM ANIMATION ON LOAD
+//////////////////////////////////////////////////////
+
+document.addEventListener("DOMContentLoaded",()=>{
+document.body.classList.add("fade");
+});
+
+//////////////////////////////////////////////////////
+// SMOOTH SCROLL
+//////////////////////////////////////////////////////
+
+document.documentElement.style.scrollBehavior="smooth";
+
 </script>
 
 </body>
