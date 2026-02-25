@@ -9,7 +9,6 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     
@@ -55,8 +54,6 @@
         .font-digital { font-family: 'Chakra Petch', sans-serif; }
         .text-glow { text-shadow: 0 0 20px rgba(6, 182, 212, 0.5); }
         .custom-checkbox { width: 20px; height: 20px; accent-color: #0ea5e9; cursor: pointer; border-radius: 4px; }
-        
-        /* เพิ่มสไตล์สำหรับตารางบนมือถือ */
         .table-container { overflow-x: auto; -webkit-overflow-scrolling: touch; }
     </style>
 </head>
@@ -96,7 +93,7 @@
                 <form id="regForm" onsubmit="handleRegister(event)" class="space-y-4 relative z-10">
                     <div class="grid grid-cols-3 gap-3">
                         <div><label class="text-[10px] text-slate-400 font-bold mb-1.5 block ml-1">คำนำหน้า</label><select name="prefix" class="w-full px-3 py-2.5 rounded-xl glass-input text-sm focus:ring-0"><option class="text-slate-900">นาย</option><option class="text-slate-900">นาง</option><option class="text-slate-900">นางสาว</option></select></div>
-                        <div class="col-span-2"><label class="text-[10px] text-slate-400 font-bold mb-1.5 block ml-1">ชื่อ-นามสกุล</label><input type="text" id="regName" name="name" required class="w-full px-3 py-2.5 rounded-xl glass-input text-sm placeholder-slate-600" placeholder="ระบุทั้งชื่อและนามสกุล"></div>
+                        <div class="col-span-2"><label class="text-[10px] text-slate-400 font-bold mb-1.5 block ml-1">ชื่อ-นามสกุล</label><input type="text" id="regName" name="name" required class="w-full px-3 py-2.5 rounded-xl glass-input text-sm placeholder-slate-600" placeholder="เว้นวรรคระหว่างชื่อและนามสกุล"></div>
                     </div>
                     <div class="grid grid-cols-2 gap-3">
                         <div><label class="text-[10px] text-slate-400 font-bold mb-1.5 block ml-1">ชื่อเล่น</label><input type="text" name="nickname" required class="w-full px-3 py-2.5 rounded-xl glass-input text-sm"></div>
@@ -181,14 +178,25 @@
                 <div class="flex justify-between items-center mb-3 px-1">
                     <h2 class="text-white font-header font-bold text-lg flex items-center gap-2"><i class="fa-solid fa-database text-cyan-400"></i> ฐานข้อมูล</h2>
                     <div class="flex gap-2 flex-wrap justify-end">
-                        <button onclick="exportToExcel()" class="text-[10px] bg-[#107c41] border border-[#185c37] hover:bg-[#185c37] text-white px-3 py-1.5 rounded-lg transition flex items-center gap-1 shadow-lg shadow-green-900/50"><i class="fa-solid fa-file-excel"></i> Export Excel</button>
+                        <button onclick="exportToExcel()" class="text-[10px] bg-[#107c41] border border-[#185c37] hover:bg-[#185c37] text-white px-3 py-1.5 rounded-lg transition flex items-center gap-1 shadow-lg shadow-green-900/50"><i class="fa-solid fa-file-excel"></i> Excel</button>
                         <button onclick="toggleFilterPanel()" class="text-[10px] bg-slate-800 border border-slate-600 hover:bg-cyan-900 hover:border-cyan-500 text-white px-3 py-1.5 rounded-lg transition flex items-center gap-1"><i class="fa-solid fa-filter"></i> ตัวกรอง</button>
                         <button onclick="toggleSelectAll()" class="text-[10px] bg-slate-800 border border-slate-600 hover:bg-slate-700 text-white px-3 py-1.5 rounded-lg transition">Select All</button>
                         <button onclick="loadAdminData()" class="text-[10px] bg-slate-800 border border-slate-600 hover:bg-slate-700 text-white px-3 py-1.5 rounded-lg transition"><i class="fa-solid fa-rotate"></i></button>
+                        <button onclick="openPaymentModal()" class="text-[10px] bg-emerald-700 border border-emerald-500 hover:bg-emerald-600 text-white px-3 py-1.5 rounded-lg transition flex items-center gap-1 shadow-lg shadow-emerald-900/50"><i class="fa-solid fa-money-bill-wave"></i> สรุปทำจ่าย</button>
                     </div>
                 </div>
 
                 <div id="filterPanel" class="hidden glass-panel p-4 rounded-xl mb-4 border-t-2 border-cyan-500/50 animate-fade-in shadow-xl">
+                    <div class="grid grid-cols-2 gap-3 mb-3">
+                        <div>
+                            <label class="text-[10px] text-cyan-400 font-bold mb-1.5 block uppercase tracking-wide">ตั้งแต่วันที่เริ่มเทรน</label>
+                            <input type="date" id="filterStart" class="w-full p-2.5 rounded-lg glass-input text-xs font-mono" onchange="applyAdminFilters()">
+                        </div>
+                        <div>
+                            <label class="text-[10px] text-cyan-400 font-bold mb-1.5 block uppercase tracking-wide">ถึงวันที่</label>
+                            <input type="date" id="filterEnd" class="w-full p-2.5 rounded-lg glass-input text-xs font-mono" onchange="applyAdminFilters()">
+                        </div>
+                    </div>
                     <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
                         <div class="col-span-2 md:col-span-1">
                             <label class="text-[10px] text-slate-400 font-bold mb-1.5 block uppercase">ค้นหาชื่อ/ชื่อเล่น</label>
@@ -205,25 +213,13 @@
                                 <option value="active">กำลังเทรน (Active)</option>
                                 <option value="passed">เทรนครบ 3 วัน (Passed)</option>
                                 <option value="dropout">🔴 ออกระหว่างเทรน</option>
+                                <option value="resigned">ออก/สละสิทธิ์ (Resigned)</option>
                             </select>
                         </div>
                     </div>
+                    <div class="text-right mt-3">
+                        <button onclick="clearFilters()" class="text-[10px] text-slate-400 hover:text-white transition underline"><i class="fa-solid fa-eraser mr-1"></i>ล้างตัวกรอง</button>
+                    </div>
                 </div>
                 
-                <div class="flex-1 table-container glass-panel rounded-xl mb-20 border-0 shadow-lg">
-                    <table class="w-full min-w-[600px] text-left border-collapse">
-                        <thead class="bg-slate-900/80 backdrop-blur text-slate-400 text-[10px] font-bold uppercase sticky top-0 z-10 shadow-md">
-                            <tr>
-                                <th class="p-3 w-10 text-center">#</th>
-                                <th class="p-3">ข้อมูล & การเข้าเรียน</th>
-                                <th class="p-3 text-center w-24">สถานะ</th>
-                                <th class="p-3 text-center w-20">จัดการ</th>
-                            </tr>
-                        </thead>
-                        <tbody id="adminTable" class="divide-y divide-slate-700/50 text-sm text-slate-300">
-                        </tbody>
-                    </table>
-                </div>
-
-                <div id="actionBar" class="fixed bottom-6 left-4 right-4 glass-panel rounded-2xl p-3 shadow-2xl transform translate-y-[150%] transition-transform duration-300 z-50 flex justify-between items-center border-t border-white/10 bg-slate-900/95">
-                    <div class="text-white text-xs pl-2"><span class="text-slate-400">Selected:</span> <span id="selectedCount" class="text-cyan-400 font-digital text-lg font-bold ml-1">0</sp
+                <div class="flex-1 table-container g
