@@ -1,245 +1,198 @@
 <!DOCTYPE html>
 <html lang="th">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>HR Training Portal | Premium</title>
-    
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    
-    <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600&family=Prompt:wght@300;400;500;600&family=Chakra+Petch:wght@400;500;600;700&display=swap" rel="stylesheet">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>HR Training Portal | Advanced</title>
 
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    fontFamily: { 
-                        sans: ['Sarabun', 'sans-serif'],
-                        header: ['Prompt', 'sans-serif'],
-                        digital: ['Chakra Petch', 'sans-serif']
-                    },
-                    colors: {
-                        glass: "rgba(255, 255, 255, 0.03)",
-                        glassBorder: "rgba(255, 255, 255, 0.08)"
-                    },
-                    boxShadow: { glow: '0 0 20px rgba(56, 189, 248, 0.15)' }
-                }
-            }
-        }
-    </script>
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
 
-    <style>
-        body { 
-            background-color: #0f172a; 
-            background-image: radial-gradient(at 0% 0%, hsla(253,16%,7%,1) 0, transparent 50%), radial-gradient(at 50% 0%, hsla(225,39%,30%,1) 0, transparent 50%), radial-gradient(at 100% 0%, hsla(339,49%,30%,1) 0, transparent 50%);
-            color: #e2e8f0; min-height: 100vh;
-        }
-        .glass-panel { background: rgba(30, 41, 59, 0.7); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border: 1px solid rgba(255, 255, 255, 0.08); box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3); }
-        .glass-input { background: rgba(15, 23, 42, 0.6); border: 1px solid rgba(255, 255, 255, 0.1); color: white; transition: all 0.3s ease; }
-        .glass-input:focus { border-color: #38bdf8; background: rgba(15, 23, 42, 0.9); box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.25); outline: none; }
-        ::-webkit-scrollbar { width: 6px; height: 6px; }
-        ::-webkit-scrollbar-track { background: transparent; }
-        ::-webkit-scrollbar-thumb { background: #334155; border-radius: 10px; }
-        ::-webkit-scrollbar-thumb:hover { background: #475569; }
-        @keyframes float { 0% { transform: translateY(0px); } 50% { transform: translateY(-5px); } 100% { transform: translateY(0px); } }
-        .animate-float { animation: float 6s ease-in-out infinite; }
-        
-        @keyframes fadeInUp {
-            from { opacity: 0; transform: translateY(15px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-        .animate-fade-in-up { animation: fadeInUp 0.5s cubic-bezier(0.4, 0, 0.2, 1) forwards; }
-        
-        .loader { width: 45px; height: 45px; border: 4px solid rgba(255,255,255,0.2); border-bottom-color: #38bdf8; border-radius: 50%; display: inline-block; animation: rotation 1s linear infinite; }
-        @keyframes rotation { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-        
-        .nav-btn.active { background: rgba(56, 189, 248, 0.15); color: #38bdf8; border-bottom: 3px solid #38bdf8; }
-        .font-digital { font-family: 'Chakra Petch', sans-serif; }
-        .text-glow { text-shadow: 0 0 20px rgba(6, 182, 212, 0.5); }
-        .custom-checkbox { width: 22px; height: 22px; accent-color: #0ea5e9; cursor: pointer; border-radius: 6px; transition: transform 0.2s; }
-        .custom-checkbox:hover { transform: scale(1.1); }
-    </style>
+<style>
+body{background:#0f172a;color:#e2e8f0}
+.glass{background:rgba(30,41,59,.7);backdrop-filter:blur(18px);border:1px solid rgba(255,255,255,.08)}
+.fade{animation:fade .35s ease}
+@keyframes fade{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+.big-btn{padding:14px;font-size:17px}
+.progress{height:6px;border-radius:10px}
+.table-row:hover{background:rgba(255,255,255,.05)}
+</style>
 </head>
-<body class="flex flex-col h-screen overflow-hidden text-slate-200" onload="startTime()">
 
-    <header class="glass-panel sticky top-0 z-50 rounded-b-3xl mx-2 mt-2 px-6 py-4 shadow-glow mb-4">
-        <div class="flex justify-between items-center">
-            <div class="flex items-center gap-4">
-                <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-cyan-500 to-blue-600 flex items-center justify-center text-white shadow-lg text-lg"><i class="fa-solid fa-layer-group"></i></div>
-                <div>
-                    <h1 class="font-header font-bold text-base text-white tracking-wide">HR PORTAL</h1>
-                    <p class="text-[11px] text-cyan-400 font-medium tracking-wider uppercase">Training System</p>
-                </div>
-            </div>
-            <div class="text-right">
-                <div id="clockDate" class="text-[11px] text-slate-400 font-medium uppercase tracking-widest">...</div>
-                <div id="clockTime" class="font-digital text-3xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-white to-cyan-200 leading-none mt-1">00:00</div>
-            </div>
-        </div>
-        <div class="flex justify-center mt-5 border-t border-white/10 pt-3 gap-2">
-            <button onclick="switchTab('register')" id="nav-register" class="nav-btn active flex-1 py-2.5 rounded-xl text-sm font-header font-medium transition-all hover:bg-white/10 text-slate-400">ลงทะเบียน</button>
-            <button onclick="switchTab('checkin')" id="nav-checkin" class="nav-btn flex-1 py-2.5 rounded-xl text-sm font-header font-medium transition-all hover:bg-white/10 text-slate-400">เช็คชื่อ</button>
-            <button onclick="switchTab('admin')" id="nav-admin" class="nav-btn flex-1 py-2.5 rounded-xl text-sm font-header font-medium transition-all hover:bg-white/10 text-slate-400"><i class="fa-solid fa-lock text-[10px] mr-1"></i> Admin</button>
-        </div>
-    </header>
+<body class="min-h-screen flex flex-col">
 
-    <main class="flex-1 overflow-y-auto px-4 pb-24 scroll-smooth">
-        <div id="loadingOverlay" class="hidden fixed inset-0 z-[60] bg-slate-900/80 backdrop-blur-md flex-col items-center justify-center">
-            <div class="loader mb-5"></div>
-            <p class="text-sm text-cyan-400 font-header font-bold tracking-widest animate-pulse">PROCESSING...</p>
-        </div>
+<header class="glass p-4 text-center text-xl font-bold">
+HR Training Portal
+</header>
 
-        <section id="page-register" class="block max-w-md mx-auto animate-fade-in-up">
-            <div class="glass-panel p-6 sm:p-8 rounded-2xl relative overflow-hidden group">
-                <div class="absolute top-0 right-0 w-48 h-48 bg-cyan-500/10 rounded-full blur-3xl -mr-10 -mt-10 pointer-events-none group-hover:bg-cyan-500/20 transition duration-700"></div>
-                <h2 class="text-xl font-header font-bold text-white mb-6 flex items-center gap-3"><span class="w-1.5 h-6 bg-cyan-400 rounded-full"></span> ลงทะเบียนพนักงานใหม่</h2>
-                <form id="regForm" onsubmit="handleRegister(event)" class="space-y-5 relative z-10">
-                    <div class="grid grid-cols-3 gap-4">
-                        <div>
-                            <label class="text-xs text-slate-400 font-bold mb-2 block ml-1">คำนำหน้า</label>
-                            <select name="prefix" class="w-full px-4 py-3 rounded-xl glass-input text-base focus:ring-0 cursor-pointer">
-                                <option class="text-slate-900">นาย</option>
-                                <option class="text-slate-900">นาง</option>
-                                <option class="text-slate-900">นางสาว</option>
-                            </select>
-                        </div>
-                        <div class="col-span-2">
-                            <label class="text-xs text-slate-400 font-bold mb-2 block ml-1">ชื่อ-นามสกุล</label>
-                            <input type="text" name="name" required class="w-full px-4 py-3 rounded-xl glass-input text-base placeholder-slate-600" placeholder="ระบุภาษาไทย">
-                        </div>
-                    </div>
-                    <div class="grid grid-cols-2 gap-4">
-                        <div>
-                            <label class="text-xs text-slate-400 font-bold mb-2 block ml-1">ชื่อเล่น</label>
-                            <input type="text" name="nickname" required class="w-full px-4 py-3 rounded-xl glass-input text-base">
-                        </div>
-                        <div>
-                            <label class="text-xs text-slate-400 font-bold mb-2 block ml-1">เบอร์โทร</label>
-                            <input type="tel" name="phone" required pattern="[0-9]{10}" class="w-full px-4 py-3 rounded-xl glass-input text-base tracking-wider" placeholder="08XXXXXXXX">
-                        </div>
-                    </div>
-                    <div>
-                        <label class="text-xs text-slate-400 font-bold mb-2 block ml-1">แผนก</label>
-                        <select name="dept" class="w-full px-4 py-3 rounded-xl glass-input text-base cursor-pointer">
-                            <option value="Telesales Product" class="text-slate-900">Telesales Product</option>
-                            <option value="Telesales Insurance" class="text-slate-900">Telesales Insurance</option>
-                            <option value="Back Office" class="text-slate-900">Back Office</option>
-                        </select>
-                    </div>
-                    <div class="grid grid-cols-2 gap-4">
-                        <div>
-                            <label class="text-xs text-slate-400 font-bold mb-2 block ml-1">ทีม</label>
-                            <input type="text" name="team" class="w-full px-4 py-3 rounded-xl glass-input text-base">
-                        </div>
-                        <div>
-                            <label class="text-xs text-slate-400 font-bold mb-2 block ml-1">ผู้แนะนำ</label>
-                            <input type="text" name="recruiter" class="w-full px-4 py-3 rounded-xl glass-input text-base">
-                        </div>
-                    </div>
-                    <button type="submit" class="w-full mt-6 py-4 bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500 text-white font-header text-lg font-bold rounded-xl shadow-lg shadow-cyan-900/30 transition-all transform active:scale-[0.98]">
-                        <i class="fa-solid fa-paper-plane mr-2"></i> ยืนยันข้อมูล
-                    </button>
-                </form>
-            </div>
-        </section>
+<div class="flex justify-center gap-2 p-3 text-sm">
+<button onclick="switchTab('register')" class="bg-cyan-600 px-4 py-2 rounded">ลงทะเบียน</button>
+<button onclick="switchTab('checkin')" class="bg-slate-700 px-4 py-2 rounded">เช็คชื่อ</button>
+<button onclick="switchTab('admin')" class="bg-slate-700 px-4 py-2 rounded">Admin</button>
+</div>
 
-        <section id="page-checkin" class="hidden max-w-md mx-auto pt-2">
-            <div class="glass-panel p-8 rounded-2xl text-center relative overflow-hidden">
-                <div class="absolute inset-x-0 top-0 h-1.5 bg-gradient-to-r from-transparent via-cyan-500 to-transparent opacity-70"></div>
-                <div class="w-24 h-24 bg-slate-800/50 rounded-2xl mx-auto flex items-center justify-center mb-6 border border-slate-700 shadow-inner rotate-3 hover:rotate-0 transition duration-500">
-                    <i class="fa-solid fa-fingerprint text-5xl text-cyan-400 drop-shadow-[0_0_15px_rgba(34,211,238,0.6)]"></i>
-                </div>
-                <h2 class="text-2xl font-header font-bold text-white mb-2">ลงชื่อเข้าอบรม</h2>
-                <p class="text-sm text-slate-400 mb-8 font-light">กรอกเบอร์โทรศัพท์เพื่อตรวจสอบข้อมูล</p>
-                
-                <div class="relative max-w-[280px] mx-auto mb-6 group">
-                    <input type="tel" id="checkinPhone" class="w-full pl-14 pr-4 py-4 rounded-xl glass-input text-xl tracking-[0.25em] text-center font-digital group-focus-within:border-cyan-500 transition-colors shadow-inner" placeholder="08XXXXXXXX">
-                    <i class="fa-solid fa-mobile-screen absolute left-5 top-1/2 -translate-y-1/2 text-slate-500 text-xl group-focus-within:text-cyan-400 transition-colors"></i>
-                </div>
-                <button onclick="checkStatus()" class="w-full max-w-[280px] mx-auto block py-3.5 bg-slate-700 hover:bg-slate-600 text-white rounded-xl font-header text-base font-bold transition border border-slate-600 hover:border-slate-500 shadow-lg active:scale-95">ตรวจสอบสถานะ</button>
+<main class="flex-1 p-4">
 
-                <div id="profileCard" class="hidden mt-8 text-left bg-slate-800/60 rounded-xl p-5 border border-cyan-900/50 shadow-lg animate-float">
-                    <div class="flex justify-between items-start mb-5 pb-4 border-b border-white/10">
-                        <div>
-                            <h3 class="text-xl font-header font-bold text-white" id="uiName">...</h3>
-                            <p class="text-sm text-slate-400 mt-1.5 font-sans"><i class="fa-regular fa-id-badge mr-1"></i> <span id="uiNick" class="font-bold">...</span> | แผนก: <span id="uiDept" class="text-cyan-400 font-bold">...</span></p>
-                        </div>
-                        <span id="uiStatus" class="px-3 py-1.5 rounded-lg text-xs font-bold uppercase bg-emerald-500/10 text-emerald-400 border border-emerald-500/30 tracking-wider shadow-sm">Active</span>
-                    </div>
-                    <div class="grid grid-cols-3 gap-3">
-                        <div id="boxD1" class="bg-slate-900/70 p-3 rounded-xl text-center border border-white/5 transition-all duration-300">
-                            <span class="text-xs text-slate-400 uppercase font-bold block mb-2 tracking-wider">Day 1</span>
-                            <button onclick="doCheckIn(1)" class="w-full py-2 rounded-lg bg-slate-800 text-slate-300 hover:text-white hover:bg-cyan-600 hover:shadow-[0_0_10px_rgba(8,145,178,0.5)] transition-all active:scale-90"><i class="fa-solid fa-check"></i></button>
-                        </div>
-                        <div id="boxD2" class="bg-slate-900/70 p-3 rounded-xl text-center border border-white/5 transition-all duration-300">
-                            <span class="text-xs text-slate-400 uppercase font-bold block mb-2 tracking-wider">Day 2</span>
-                            <button onclick="doCheckIn(2)" class="w-full py-2 rounded-lg bg-slate-800 text-slate-300 hover:text-white hover:bg-cyan-600 hover:shadow-[0_0_10px_rgba(8,145,178,0.5)] transition-all active:scale-90"><i class="fa-solid fa-check"></i></button>
-                        </div>
-                        <div id="boxD3" class="bg-slate-900/70 p-3 rounded-xl text-center border border-white/5 transition-all duration-300">
-                            <span class="text-xs text-slate-400 uppercase font-bold block mb-2 tracking-wider">Day 3</span>
-                            <button onclick="doCheckIn(3)" class="w-full py-2 rounded-lg bg-slate-800 text-slate-300 hover:text-white hover:bg-cyan-600 hover:shadow-[0_0_10px_rgba(8,145,178,0.5)] transition-all active:scale-90"><i class="fa-solid fa-check"></i></button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </section>
+<!-- REGISTER -->
+<section id="page-register">
+<div class="glass p-6 rounded-xl max-w-md mx-auto fade">
+<h2 class="text-lg font-bold mb-4">ลงทะเบียนพนักงานใหม่</h2>
+<form id="regForm" class="space-y-3">
+<input name="prefix" placeholder="คำนำหน้า" class="w-full p-3 rounded bg-slate-800">
+<input required name="name" placeholder="ชื่อ-นามสกุล" class="w-full p-3 rounded bg-slate-800">
+<input required name="nickname" placeholder="ชื่อเล่น" class="w-full p-3 rounded bg-slate-800">
+<input required name="team" placeholder="ทีม" class="w-full p-3 rounded bg-slate-800">
+<input required name="phone" placeholder="เบอร์โทร" class="w-full p-3 rounded bg-slate-800">
+<input name="dept" placeholder="แผนก" class="w-full p-3 rounded bg-slate-800">
+<input name="recruiter" placeholder="ผู้แนะนำ" class="w-full p-3 rounded bg-slate-800">
+<button class="big-btn w-full bg-cyan-600 rounded">บันทึก</button>
+</form>
+</div>
+</section>
 
-        <section id="page-admin" class="hidden h-full flex-col">
-            <div id="adminLogin" class="max-w-xs mx-auto glass-panel p-8 rounded-2xl text-center mt-10 border border-red-500/30 shadow-[0_0_20px_rgba(239,68,68,0.1)]">
-                <div class="w-16 h-16 bg-red-500/10 rounded-full flex items-center justify-center mx-auto mb-5 border border-red-500/30">
-                    <i class="fa-solid fa-shield-cat text-3xl text-red-400"></i>
-                </div>
-                <h3 class="text-white font-header font-bold text-lg mb-6 tracking-wide">Restricted Area</h3>
-                <input type="password" id="adminPass" class="w-full px-4 py-3.5 rounded-xl glass-input text-center text-lg tracking-[0.3em] mb-5 font-digital" placeholder="PASSWORD">
-                <button onclick="adminAccess()" class="w-full py-3 bg-red-600 hover:bg-red-500 text-white rounded-xl font-header font-bold text-base transition shadow-lg shadow-red-900/40 active:scale-95">เข้าสู่ระบบ Admin</button>
-            </div>
+<!-- CHECKIN -->
+<section id="page-checkin" class="hidden">
+<div class="glass p-6 rounded-xl max-w-md mx-auto text-center fade">
+<h2 class="text-lg font-bold mb-4">เช็คชื่อเข้าอบรม</h2>
+<input id="checkPhone" placeholder="กรอกเบอร์โทร" class="w-full p-4 rounded bg-slate-800 text-center text-lg mb-4">
+<button onclick="checkUser()" class="big-btn w-full bg-emerald-600 rounded mb-4">ตรวจสอบ</button>
 
-            <div id="adminDashboard" class="hidden flex-1 flex-col animate-fade-in-up">
-                <div class="flex justify-between items-center mb-4 px-1">
-                    <h2 class="text-white font-header font-bold text-xl flex items-center gap-2"><i class="fa-solid fa-server text-cyan-400"></i> ฐานข้อมูลพนักงาน</h2>
-                    <div class="flex gap-2 flex-wrap justify-end">
-                        <button onclick="toggleFilterPanel()" class="text-xs bg-slate-800 border border-slate-600 hover:bg-cyan-900 hover:border-cyan-500 text-white px-3.5 py-2 rounded-lg transition flex items-center gap-1.5"><i class="fa-solid fa-filter"></i> กรองข้อมูล</button>
-                        <button onclick="toggleSelectAll()" class="text-xs bg-slate-800 border border-slate-600 hover:bg-slate-700 text-white px-3.5 py-2 rounded-lg transition">Select All</button>
-                        <button onclick="loadAdminData()" class="text-xs bg-slate-800 border border-slate-600 hover:bg-slate-700 text-white px-3.5 py-2 rounded-lg transition"><i class="fa-solid fa-rotate"></i></button>
-                        <button onclick="openPaymentModal()" class="text-xs bg-emerald-700 border border-emerald-500 hover:bg-emerald-600 text-white px-3.5 py-2 rounded-lg transition flex items-center gap-1.5 shadow-lg shadow-emerald-900/50"><i class="fa-solid fa-money-bill-wave"></i> สรุปทำจ่าย</button>
-                    </div>
-                </div>
+<div id="userCard" class="hidden text-left mt-4 space-y-4">
+<div id="userName" class="font-bold text-lg"></div>
+<div id="userTeam" class="text-sm text-slate-400"></div>
 
-                <div id="filterPanel" class="hidden glass-panel p-5 rounded-xl mb-4 border-t-2 border-cyan-500/50 shadow-xl">
-                    <div class="grid grid-cols-2 gap-4 mb-4">
-                        <div>
-                            <label class="text-[11px] text-cyan-400 font-bold mb-1.5 block uppercase tracking-wide">ตั้งแต่วันที่เริ่มเทรน</label>
-                            <input type="date" id="filterStart" class="w-full p-3 rounded-xl glass-input text-sm font-mono" onchange="applyAdminFilters()">
-                        </div>
-                        <div>
-                            <label class="text-[11px] text-cyan-400 font-bold mb-1.5 block uppercase tracking-wide">ถึงวันที่</label>
-                            <input type="date" id="filterEnd" class="w-full p-3 rounded-xl glass-input text-sm font-mono" onchange="applyAdminFilters()">
-                        </div>
-                    </div>
-                    <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
-                        <div class="col-span-2 md:col-span-1">
-                            <label class="text-[11px] text-slate-400 font-bold mb-1.5 block uppercase">ค้นหาชื่อ/ชื่อเล่น</label>
-                            <input type="text" id="filterName" class="w-full p-3 rounded-xl glass-input text-sm" placeholder="พิมพ์ชื่อค้นหา..." onkeyup="applyAdminFilters()">
-                        </div>
-                        <div>
-                            <label class="text-[11px] text-slate-400 font-bold mb-1.5 block uppercase">ทีม</label>
-                            <input type="text" id="filterTeam" class="w-full p-3 rounded-xl glass-input text-sm" placeholder="ระบุทีม..." onkeyup="applyAdminFilters()">
-                        </div>
-                        <div class="col-span-2">
-                            <label class="text-[11px] text-slate-400 font-bold mb-1.5 block uppercase">สถานะ</label>
-                            <select id="filterStatus" class="w-full p-3 rounded-xl glass-input text-sm cursor-pointer" onchange="applyAdminFilters()">
-                                <option value="all">ทั้งหมด (All)</option>
-                                <option value="active">กำลังเทรน (Active)</option>
-                                <option value="passed">เทรนครบ 3 วัน (Passed)</option>
-                                <option value="dropout">🔴 ออกระหว่างเทรน</option>
-                                <option value="resigned">ออก/สละสิทธิ์ (Resigned)</option>
-                            </select>
-                        </div>
-                    </div>
-                    <div class="text-right mt-4 pt-2 border-t border-white/5">
-                        <button onclick="clearFilters()" class="text-xs text-slate-400 hover:text-white transition font-medium"><i class="fa-solid fa-eraser mr-1.5"></i> ล้างตัวกรองทั้งหมด</button>
-                    </div>
-                </div>
-       
+<div>
+Day 1
+<div class="progress bg-slate-700 mt-1"><div id="p1" class="progress bg-cyan-500 w-0"></div></div>
+<button onclick="doCheck(1)" class="big-btn w-full bg-cyan-600 rounded mt-2">เช็คชื่อ Day 1</button>
+</div>
+
+<div>
+Day 2
+<div class="progress bg-slate-700 mt-1"><div id="p2" class="progress bg-cyan-500 w-0"></div></div>
+<button onclick="doCheck(2)" class="big-btn w-full bg-cyan-600 rounded mt-2">เช็คชื่อ Day 2</button>
+</div>
+
+<div>
+Day 3
+<div class="progress bg-slate-700 mt-1"><div id="p3" class="progress bg-cyan-500 w-0"></div></div>
+<button onclick="doCheck(3)" class="big-btn w-full bg-cyan-600 rounded mt-2">เช็คชื่อ Day 3</button>
+</div>
+
+</div>
+</div>
+</section>
+
+<!-- ADMIN -->
+<section id="page-admin" class="hidden">
+<div id="adminLogin" class="glass p-6 rounded-xl max-w-sm mx-auto text-center fade">
+<h3 class="font-bold mb-4">Admin Login</h3>
+<input id="adminPass" type="password" placeholder="Password" class="w-full p-3 rounded bg-slate-800 mb-4">
+<button onclick="adminAccess()" class="big-btn w-full bg-red-600 rounded">เข้าสู่ระบบ</button>
+</div>
+
+<div id="adminPanel" class="hidden mt-6">
+<div class="glass p-4 rounded-xl overflow-auto">
+<table class="w-full text-sm">
+<thead class="bg-slate-800 text-xs">
+<tr>
+<th class="p-2">ชื่อ</th>
+<th class="p-2">ทีม</th>
+<th class="p-2">เข้าเรียน</th>
+<th class="p-2">สถานะ</th>
+<th class="p-2">จัดการ</th>
+</tr>
+</thead>
+<tbody id="adminTable"></tbody>
+</table>
+</div>
+</div>
+</section>
+
+</main>
+
+<script>
+const API_URL="https://script.google.com/macros/s/AKfycbyYYauRspNoRvkhUWKZh4c5Hp1TzhxWGu_T96TvPPMZ6p1DHJqh30Azzi_PrEcGn9dy/exec";
+
+function switchTab(t){
+["register","checkin","admin"].forEach(p=>document.getElementById("page-"+p).classList.add("hidden"))
+document.getElementById("page-"+t).classList.remove("hidden")
+}
+
+async function api(payload){
+const r=await fetch(API_URL,{method:"POST",body:JSON.stringify(payload)})
+return await r.json()
+}
+
+regForm.addEventListener("submit",async e=>{
+e.preventDefault()
+const data=Object.fromEntries(new FormData(e.target))
+const r=await api({action:"register",...data})
+if(r.status==="success"){Swal.fire("สำเร็จ","ลงทะเบียนแล้ว","success");e.target.reset()}
+else Swal.fire("ผิดพลาด",r.message,"error")
+})
+
+async function checkUser(){
+const phone=checkPhone.value
+const r=await api({action:"login",phone})
+if(r.status!=="success"){Swal.fire("ไม่พบข้อมูล","","error");return}
+const u=r.data
+userCard.classList.remove("hidden")
+userName.innerText=u.name+" ("+u.nickname+")"
+userTeam.innerText="ทีม: "+u.team+" | แผนก: "+u.dept
+updateProgress(u)
+}
+
+async function doCheck(day){
+const phone=checkPhone.value
+const r=await api({action:"checkin",phone,day})
+if(r.status==="success"){Swal.fire({icon:"success",title:"เช็คชื่อสำเร็จ",timer:1200,showConfirmButton:false});checkUser()}
+else Swal.fire("แจ้งเตือน",r.message,"warning")
+}
+
+function updateProgress(u){
+p1.style.width=u.d1?"100%":"0%"
+p2.style.width=u.d2?"100%":"0%"
+p3.style.width=u.d3?"100%":"0%"
+}
+
+async function adminAccess(){
+const pass=adminPass.value
+const r=await api({action:"get_admin",pass})
+if(r.status!=="success"){Swal.fire("รหัสผิด","","error");return}
+adminLogin.classList.add("hidden")
+adminPanel.classList.remove("hidden")
+renderAdmin(r.data)
+}
+
+function renderAdmin(data){
+adminTable.innerHTML=""
+data.forEach(u=>{
+let count=0;if(u.d1)count++;if(u.d2)count++;if(u.d3)count++;
+let statusColor="text-blue-400"
+if(u.status==="Passed")statusColor="text-emerald-400"
+if(["Resigned","New Job"].includes(u.status))statusColor="text-red-400"
+
+adminTable.innerHTML+=`
+<tr class="table-row border-b border-slate-700">
+<td class="p-2">${u.prefix||""} ${u.name}<div class="text-xs text-slate-400">${u.nickname}</div></td>
+<td class="p-2">${u.team}</td>
+<td class="p-2 text-center">${count}/3</td>
+<td class="p-2 ${statusColor}">${u.status}</td>
+<td class="p-2 text-center">
+<button onclick="deleteUser(${u.row})" class="text-red-400"><i class="fa fa-trash"></i></button>
+</td>
+</tr>`
+})
+}
+
+async function deleteUser(row){
+if(!confirm("ลบข้อมูล?"))return
+await api({action:"admin_delete",row})
+adminAccess()
+}
+</script>
+
+</body>
+</html>
