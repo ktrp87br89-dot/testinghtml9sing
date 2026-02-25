@@ -55,6 +55,10 @@
         .text-glow { text-shadow: 0 0 20px rgba(6, 182, 212, 0.5); }
         .custom-checkbox { width: 20px; height: 20px; accent-color: #0ea5e9; cursor: pointer; border-radius: 4px; }
         .table-container { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+        
+        /* แก้ปัญหา Tailwind hidden + flex ชนกันบนมือถือ */
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
     </style>
 </head>
 <body class="flex flex-col h-screen overflow-hidden text-slate-200" onload="startTime()">
@@ -86,7 +90,7 @@
             <p class="text-xs text-cyan-400 font-header tracking-widest animate-pulse">PROCESSING...</p>
         </div>
 
-        <section id="page-register" class="max-w-md mx-auto animate-fade-in">
+        <section id="page-register" class="tab-content active max-w-md mx-auto animate-fade-in">
             <div class="glass-panel p-6 rounded-2xl relative overflow-hidden group">
                 <div class="absolute top-0 right-0 w-40 h-40 bg-cyan-500/10 rounded-full blur-3xl -mr-10 -mt-10 pointer-events-none group-hover:bg-cyan-500/20 transition duration-700"></div>
                 <h2 class="text-lg font-header font-bold text-white mb-6 flex items-center gap-2"><span class="w-1 h-5 bg-cyan-400 rounded-full"></span> ลงทะเบียนพนักงานใหม่</h2>
@@ -114,7 +118,7 @@
             </div>
         </section>
 
-        <section id="page-checkin" class="hidden max-w-md mx-auto pt-4">
+        <section id="page-checkin" class="tab-content max-w-md mx-auto pt-4">
             <div class="glass-panel p-8 rounded-2xl text-center relative overflow-hidden">
                 <div class="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-transparent via-cyan-500 to-transparent opacity-50"></div>
                 <div class="w-20 h-20 bg-slate-800/50 rounded-2xl mx-auto flex items-center justify-center mb-6 border border-slate-700 shadow-inner rotate-3 hover:rotate-0 transition duration-500">
@@ -142,15 +146,15 @@
             </div>
         </section>
 
-        <section id="page-admin" class="hidden h-full flex flex-col">
+        <section id="page-admin" class="tab-content pb-10">
             <div id="adminLogin" class="max-w-xs mx-auto glass-panel p-8 rounded-2xl text-center mt-10 border border-red-500/20">
                 <div class="w-14 h-14 bg-red-500/10 rounded-full flex items-center justify-center mx-auto mb-4 border border-red-500/20"><i class="fa-solid fa-shield-cat text-2xl text-red-400"></i></div>
                 <h3 class="text-white font-header font-bold mb-6">Restricted Area</h3>
-                <input type="password" id="adminPass" class="w-full px-4 py-3 rounded-xl glass-input text-center mb-4 text-sm" placeholder="Admin Password">
-                <button onclick="adminAccess()" class="w-full py-2.5 bg-red-600 hover:bg-red-500 text-white rounded-xl font-bold text-sm transition shadow-lg shadow-red-900/30">เข้าสู่ระบบ</button>
+                <input type="password" id="adminPass" class="w-full px-4 py-3 rounded-xl glass-input text-center mb-4 text-sm font-mono tracking-widest" placeholder="Admin Password">
+                <button onclick="adminAccess()" class="w-full py-3 bg-red-600 hover:bg-red-500 text-white rounded-xl font-bold text-sm transition shadow-lg shadow-red-900/30">เข้าสู่ระบบ</button>
             </div>
 
-            <div id="adminDashboard" class="hidden flex-1 flex flex-col">
+            <div id="adminDashboard" class="hidden flex-col w-full">
                 <div class="glass-panel p-4 rounded-xl mb-4 flex flex-col md:flex-row gap-4 items-center">
                     <div class="w-32 h-32 relative">
                         <canvas id="statusChart"></canvas>
@@ -218,8 +222,4 @@
                         </div>
                     </div>
                     <div class="text-right mt-3">
-                        <button onclick="clearFilters()" class="text-[10px] text-slate-400 hover:text-white transition underline"><i class="fa-solid fa-eraser mr-1"></i>ล้างตัวกรอง</button>
-                    </div>
-                </div>
-                
-                <div class="flex-1 table-container g
+                        <button onclick="clearFilters()" class="text-[10px] text-slate-400 hover:text-white transition 
