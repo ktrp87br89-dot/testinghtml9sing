@@ -8,12 +8,10 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
-    
     <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600&family=Prompt:wght@300;400;500;600&family=Chakra+Petch:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 
     <script>
         tailwind.config = {
@@ -43,7 +41,7 @@
         .glass-panel { background: rgba(30, 41, 59, 0.7); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border: 1px solid rgba(255, 255, 255, 0.08); box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3); }
         .glass-input { background: rgba(15, 23, 42, 0.6); border: 1px solid rgba(255, 255, 255, 0.1); color: white; transition: all 0.3s ease; }
         .glass-input:focus { border-color: #38bdf8; background: rgba(15, 23, 42, 0.9); box-shadow: 0 0 0 2px rgba(56, 189, 248, 0.2); outline: none; }
-        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar { width: 6px; }
         ::-webkit-scrollbar-track { background: transparent; }
         ::-webkit-scrollbar-thumb { background: #334155; border-radius: 10px; }
         ::-webkit-scrollbar-thumb:hover { background: #475569; }
@@ -55,13 +53,6 @@
         .font-digital { font-family: 'Chakra Petch', sans-serif; }
         .text-glow { text-shadow: 0 0 20px rgba(6, 182, 212, 0.5); }
         .custom-checkbox { width: 20px; height: 20px; accent-color: #0ea5e9; cursor: pointer; border-radius: 4px; }
-        .table-container { overflow-x: auto; -webkit-overflow-scrolling: touch; }
-        
-        /* เพิ่มสไตล์สำหรับสถานะตาราง Admin */
-        .status-badge { padding: 4px 8px; border-radius: 6px; font-size: 10px; font-weight: bold; text-transform: uppercase; letter-spacing: 0.5px; }
-        .status-active { background: rgba(56, 189, 248, 0.1); color: #38bdf8; border: 1px solid rgba(56, 189, 248, 0.2); }
-        .status-passed { background: rgba(16, 185, 129, 0.1); color: #10b981; border: 1px solid rgba(16, 185, 129, 0.2); }
-        .status-dropout { background: rgba(239, 68, 68, 0.1); color: #ef4444; border: 1px solid rgba(239, 68, 68, 0.2); }
     </style>
 </head>
 <body class="flex flex-col h-screen overflow-hidden text-slate-200" onload="initApp()">
@@ -97,7 +88,6 @@
             <div class="glass-panel p-6 rounded-2xl relative overflow-hidden group">
                 <div class="absolute top-0 right-0 w-40 h-40 bg-cyan-500/10 rounded-full blur-3xl -mr-10 -mt-10 pointer-events-none group-hover:bg-cyan-500/20 transition duration-700"></div>
                 <h2 class="text-lg font-header font-bold text-white mb-6 flex items-center gap-2"><span class="w-1 h-5 bg-cyan-400 rounded-full"></span> ลงทะเบียนพนักงานใหม่</h2>
-                
                 <form id="regForm" onsubmit="handleRegister(event)" class="space-y-4 relative z-10">
                     <div class="grid grid-cols-3 gap-3">
                         <div>
@@ -110,7 +100,7 @@
                         </div>
                         <div class="col-span-2">
                             <label class="text-[10px] text-slate-400 font-bold mb-1.5 block ml-1">ชื่อ-นามสกุล</label>
-                            <input type="text" id="regName" name="name" required class="w-full px-3 py-2.5 rounded-xl glass-input text-sm placeholder-slate-600" placeholder="ระบุทั้งชื่อและนามสกุล">
+                            <input type="text" name="name" required class="w-full px-3 py-2.5 rounded-xl glass-input text-sm placeholder-slate-600" placeholder="ภาษาไทย">
                         </div>
                     </div>
                     <div class="grid grid-cols-2 gap-3">
@@ -132,21 +122,15 @@
                         </select>
                     </div>
                     <div class="grid grid-cols-2 gap-3">
-                        <div>
-                            <label class="text-[10px] text-slate-400 font-bold mb-1.5 block ml-1">ทีม</label>
-                            <input type="text" name="team" class="w-full px-3 py-2.5 rounded-xl glass-input text-sm">
-                        </div>
-                        <div>
-                            <label class="text-[10px] text-slate-400 font-bold mb-1.5 block ml-1">ผู้แนะนำ</label>
-                            <input type="text" name="recruiter" class="w-full px-3 py-2.5 rounded-xl glass-input text-sm">
-                        </div>
+                        <div><label class="text-[10px] text-slate-400 font-bold mb-1.5 block ml-1">ทีม</label><input type="text" name="team" class="w-full px-3 py-2.5 rounded-xl glass-input text-sm"></div>
+                        <div><label class="text-[10px] text-slate-400 font-bold mb-1.5 block ml-1">ผู้แนะนำ</label><input type="text" name="recruiter" class="w-full px-3 py-2.5 rounded-xl glass-input text-sm"></div>
                     </div>
-                    <button type="submit" id="btnRegister" class="w-full mt-4 py-3 bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500 text-white font-header font-medium rounded-xl shadow-lg shadow-cyan-900/20 transition-all transform active:scale-[0.98]">ยืนยันข้อมูล</button>
+                    <button type="submit" class="w-full mt-4 py-3 bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500 text-white font-header font-medium rounded-xl shadow-lg shadow-cyan-900/20 transition-all transform active:scale-[0.98]">ยืนยันข้อมูล</button>
                 </form>
             </div>
         </section>
 
-        <section id="page-checkin" class="hidden max-w-md mx-auto pt-4 animate-fade-in">
+        <section id="page-checkin" class="hidden max-w-md mx-auto pt-4">
             <div class="glass-panel p-8 rounded-2xl text-center relative overflow-hidden">
                 <div class="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-transparent via-cyan-500 to-transparent opacity-50"></div>
                 <div class="w-20 h-20 bg-slate-800/50 rounded-2xl mx-auto flex items-center justify-center mb-6 border border-slate-700 shadow-inner rotate-3 hover:rotate-0 transition duration-500">
@@ -154,99 +138,99 @@
                 </div>
                 <h2 class="text-xl font-header font-bold text-white mb-2">ลงชื่อเข้าอบรม</h2>
                 <p class="text-xs text-slate-400 mb-8 font-light">กรอกเบอร์โทรศัพท์เพื่อยืนยันตัวตน</p>
-                
                 <div class="relative max-w-xs mx-auto mb-6 group">
                     <input type="tel" id="checkinPhone" class="w-full pl-12 pr-4 py-3.5 rounded-xl glass-input text-lg tracking-[0.1em] text-center font-digital group-focus-within:border-cyan-500 transition-colors" placeholder="08X-XXX-XXXX" oninput="formatPhoneInput(this)">
                     <i class="fa-solid fa-mobile-screen absolute left-4 top-4 text-slate-500 text-lg group-focus-within:text-cyan-400 transition-colors"></i>
                 </div>
-                <button id="btnCheckStatus" onclick="checkStatus()" class="w-full py-3 bg-slate-700 hover:bg-slate-600 text-white rounded-xl font-header font-medium transition border border-slate-600 hover:border-slate-500">ตรวจสอบสถานะ</button>
+                <button onclick="checkStatus()" class="w-full py-3 bg-slate-700 hover:bg-slate-600 text-white rounded-xl font-header font-medium transition border border-slate-600 hover:border-slate-500">ตรวจสอบสถานะ</button>
 
                 <div id="profileCard" class="hidden mt-8 text-left bg-slate-800/40 rounded-xl p-5 border border-slate-700/50 animate-float">
                     <div class="flex justify-between items-start mb-4 pb-4 border-b border-white/5">
-                        <div>
-                            <h3 class="text-lg font-header font-bold text-white" id="uiName">...</h3>
-                            <p class="text-xs text-slate-400 mt-1 font-mono"><span id="uiNick">...</span> | <span id="uiDept" class="text-cyan-400">...</span></p>
-                        </div>
-                        <span id="uiStatus" class="status-badge status-active">Active</span>
+                        <div><h3 class="text-lg font-header font-bold text-white" id="uiName">...</h3><p class="text-xs text-slate-400 mt-1 font-mono"><span id="uiNick">...</span> | <span id="uiDept" class="text-cyan-400">...</span></p></div>
+                        <span id="uiStatus" class="px-2.5 py-1 rounded-md text-[10px] font-bold uppercase bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 tracking-wider">Active</span>
                     </div>
                     <div class="grid grid-cols-3 gap-3">
-                        <div id="boxD1" class="bg-slate-900/50 p-2 rounded-lg text-center border border-white/5">
-                            <span class="text-[10px] text-slate-500 uppercase font-bold block mb-2 tracking-wider">Day 1</span>
-                            <button onclick="doCheckIn(1)" class="w-full py-1.5 rounded bg-slate-800 text-slate-400 hover:text-white hover:bg-cyan-600 transition" id="btnD1"><i class="fa-solid fa-check"></i></button>
-                        </div>
-                        <div id="boxD2" class="bg-slate-900/50 p-2 rounded-lg text-center border border-white/5">
-                            <span class="text-[10px] text-slate-500 uppercase font-bold block mb-2 tracking-wider">Day 2</span>
-                            <button onclick="doCheckIn(2)" class="w-full py-1.5 rounded bg-slate-800 text-slate-400 hover:text-white hover:bg-cyan-600 transition" id="btnD2"><i class="fa-solid fa-check"></i></button>
-                        </div>
-                        <div id="boxD3" class="bg-slate-900/50 p-2 rounded-lg text-center border border-white/5">
-                            <span class="text-[10px] text-slate-500 uppercase font-bold block mb-2 tracking-wider">Day 3</span>
-                            <button onclick="doCheckIn(3)" class="w-full py-1.5 rounded bg-slate-800 text-slate-400 hover:text-white hover:bg-cyan-600 transition" id="btnD3"><i class="fa-solid fa-check"></i></button>
-                        </div>
+                        <div id="boxD1" class="bg-slate-900/50 p-2 rounded-lg text-center border border-white/5"><span class="text-[10px] text-slate-500 uppercase font-bold block mb-2 tracking-wider">Day 1</span><button onclick="doCheckIn(1)" class="w-full py-1.5 rounded bg-slate-800 text-slate-400 hover:text-white hover:bg-cyan-600 transition"><i class="fa-solid fa-check"></i></button></div>
+                        <div id="boxD2" class="bg-slate-900/50 p-2 rounded-lg text-center border border-white/5"><span class="text-[10px] text-slate-500 uppercase font-bold block mb-2 tracking-wider">Day 2</span><button onclick="doCheckIn(2)" class="w-full py-1.5 rounded bg-slate-800 text-slate-400 hover:text-white hover:bg-cyan-600 transition"><i class="fa-solid fa-check"></i></button></div>
+                        <div id="boxD3" class="bg-slate-900/50 p-2 rounded-lg text-center border border-white/5"><span class="text-[10px] text-slate-500 uppercase font-bold block mb-2 tracking-wider">Day 3</span><button onclick="doCheckIn(3)" class="w-full py-1.5 rounded bg-slate-800 text-slate-400 hover:text-white hover:bg-cyan-600 transition"><i class="fa-solid fa-check"></i></button></div>
                     </div>
                 </div>
             </div>
         </section>
 
-        <section id="page-admin" class="hidden h-full flex flex-col animate-fade-in">
+        <section id="page-admin" class="hidden h-full flex flex-col">
             <div id="adminLogin" class="max-w-xs mx-auto glass-panel p-8 rounded-2xl text-center mt-10 border border-red-500/20">
-                <div class="w-14 h-14 bg-red-500/10 rounded-full flex items-center justify-center mx-auto mb-4 border border-red-500/20">
-                    <i class="fa-solid fa-shield-cat text-2xl text-red-400"></i>
-                </div>
+                <div class="w-14 h-14 bg-red-500/10 rounded-full flex items-center justify-center mx-auto mb-4 border border-red-500/20"><i class="fa-solid fa-shield-cat text-2xl text-red-400"></i></div>
                 <h3 class="text-white font-header font-bold mb-6">Restricted Area</h3>
-                <input type="password" id="adminPass" class="w-full px-4 py-3 rounded-xl glass-input text-center mb-4 text-sm tracking-widest" placeholder="••••••••">
+                <input type="password" id="adminPass" class="w-full px-4 py-3 rounded-xl glass-input text-center mb-4 text-sm" placeholder="Admin Password">
                 <button onclick="adminAccess()" class="w-full py-2.5 bg-red-600 hover:bg-red-500 text-white rounded-xl font-bold text-sm transition shadow-lg shadow-red-900/30">เข้าสู่ระบบ</button>
             </div>
 
             <div id="adminDashboard" class="hidden flex-1 flex flex-col">
-                <div class="glass-panel p-4 rounded-xl mb-4 flex flex-col md:flex-row gap-4 items-center">
-                    <div class="w-32 h-32 relative hidden md:block">
-                        <canvas id="statusChart"></canvas>
-                    </div>
-                    <div class="flex-1 grid grid-cols-2 md:grid-cols-4 gap-2 text-center w-full">
-                        <div class="bg-slate-800/50 p-2 rounded-lg border border-white/5">
-                            <p class="text-[10px] text-slate-400 uppercase">ทั้งหมด</p>
-                            <p id="statTotal" class="text-xl font-digital text-white font-bold">0</p>
-                        </div>
-                        <div class="bg-emerald-900/20 p-2 rounded-lg border border-emerald-500/20">
-                            <p class="text-[10px] text-emerald-400 uppercase">ผ่านเกณฑ์</p>
-                            <p id="statPassed" class="text-xl font-digital text-emerald-400 font-bold">0</p>
-                        </div>
-                        <div class="bg-blue-900/20 p-2 rounded-lg border border-blue-500/20">
-                            <p class="text-[10px] text-blue-400 uppercase">กำลังเทรน</p>
-                            <p id="statActive" class="text-xl font-digital text-blue-400 font-bold">0</p>
-                        </div>
-                        <div class="bg-red-900/20 p-2 rounded-lg border border-red-500/20">
-                            <p class="text-[10px] text-red-400 uppercase">สละสิทธิ์</p>
-                            <p id="statDropout" class="text-xl font-digital text-red-400 font-bold">0</p>
-                        </div>
-                    </div>
-                </div>
-
                 <div class="flex justify-between items-center mb-3 px-1">
                     <h2 class="text-white font-header font-bold text-lg flex items-center gap-2"><i class="fa-solid fa-database text-cyan-400"></i> ฐานข้อมูล</h2>
                     <div class="flex gap-2 flex-wrap justify-end">
-                        <button onclick="exportToExcel()" class="text-[10px] bg-[#107c41] border border-[#185c37] hover:bg-[#185c37] text-white px-3 py-1.5 rounded-lg transition flex items-center gap-1 shadow-lg shadow-green-900/50"><i class="fa-solid fa-file-excel"></i> Export</button>
-                        <button onclick="toggleFilterPanel()" class="text-[10px] bg-slate-800 border border-slate-600 hover:bg-cyan-900 hover:border-cyan-500 text-white px-3 py-1.5 rounded-lg transition flex items-center gap-1"><i class="fa-solid fa-filter"></i> ค้นหา</button>
-                        <button onclick="loadAdminData()" id="btnRefresh" class="text-[10px] bg-slate-800 border border-slate-600 hover:bg-slate-700 text-white px-3 py-1.5 rounded-lg transition"><i class="fa-solid fa-rotate"></i></button>
+                        <button onclick="toggleFilterPanel()" class="text-[10px] bg-slate-800 border border-slate-600 hover:bg-cyan-900 hover:border-cyan-500 text-white px-3 py-1.5 rounded-lg transition flex items-center gap-1"><i class="fa-solid fa-filter"></i> ตัวกรอง</button>
+                        <button onclick="toggleSelectAll()" class="text-[10px] bg-slate-800 border border-slate-600 hover:bg-slate-700 text-white px-3 py-1.5 rounded-lg transition">Select All</button>
+                        <button onclick="loadAdminData()" class="text-[10px] bg-slate-800 border border-slate-600 hover:bg-slate-700 text-white px-3 py-1.5 rounded-lg transition"><i class="fa-solid fa-rotate"></i></button>
+                        <button onclick="openPaymentModal()" class="text-[10px] bg-emerald-700 border border-emerald-500 hover:bg-emerald-600 text-white px-3 py-1.5 rounded-lg transition flex items-center gap-1 shadow-lg shadow-emerald-900/50"><i class="fa-solid fa-money-bill-wave"></i> สรุปทำจ่าย</button>
+                        <button onclick="exportToExcel()" class="text-[10px] bg-[#107c41] border border-[#185c37] hover:bg-[#185c37] text-white px-3 py-1.5 rounded-lg transition flex items-center gap-1 shadow-lg shadow-green-900/50"><i class="fa-solid fa-file-excel"></i> Export Excel</button>
                     </div>
                 </div>
 
-                <div id="filterPanel" class="hidden glass-panel p-4 rounded-xl mb-4 border-t-2 border-cyan-500/50 shadow-xl">
+                <div id="filterPanel" class="hidden glass-panel p-4 rounded-xl mb-4 border-t-2 border-cyan-500/50 animate-fade-in shadow-xl">
+                    <div class="grid grid-cols-2 gap-3 mb-3">
+                        <div>
+                            <label class="text-[10px] text-cyan-400 font-bold mb-1.5 block uppercase tracking-wide">ตั้งแต่วันที่เริ่มเทรน</label>
+                            <input type="date" id="filterStart" class="w-full p-2.5 rounded-lg glass-input text-xs font-mono" onchange="applyAdminFilters()">
+                        </div>
+                        <div>
+                            <label class="text-[10px] text-cyan-400 font-bold mb-1.5 block uppercase tracking-wide">ถึงวันที่</label>
+                            <input type="date" id="filterEnd" class="w-full p-2.5 rounded-lg glass-input text-xs font-mono" onchange="applyAdminFilters()">
+                        </div>
+                    </div>
                     <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
                         <div class="col-span-2 md:col-span-1">
-                            <label class="text-[10px] text-slate-400 font-bold mb-1.5 block uppercase">ค้นหาชื่อ</label>
+                            <label class="text-[10px] text-slate-400 font-bold mb-1.5 block uppercase">ค้นหาชื่อ/ชื่อเล่น</label>
                             <input type="text" id="filterName" class="w-full p-2.5 rounded-lg glass-input text-xs" placeholder="พิมพ์ชื่อ..." onkeyup="applyAdminFilters()">
                         </div>
-                        <div class="col-span-2 md:col-span-1">
+                        <div>
+                            <label class="text-[10px] text-slate-400 font-bold mb-1.5 block uppercase">ทีม</label>
+                            <input type="text" id="filterTeam" class="w-full p-2.5 rounded-lg glass-input text-xs" placeholder="พิมพ์ทีม..." onkeyup="applyAdminFilters()">
+                        </div>
+                        <div class="col-span-2">
                             <label class="text-[10px] text-slate-400 font-bold mb-1.5 block uppercase">สถานะ</label>
                             <select id="filterStatus" class="w-full p-2.5 rounded-lg glass-input text-xs" onchange="applyAdminFilters()">
-                                <option value="all" class="text-slate-900">ทั้งหมด (All)</option>
-                                <option value="active" class="text-slate-900">กำลังเทรน (Active)</option>
-                                <option value="passed" class="text-slate-900">เทรนครบ 3 วัน (Passed)</option>
-                                <option value="dropout" class="text-slate-900">🔴 ออกระหว่างเทรน</option>
+                                <option value="all">ทั้งหมด (All)</option>
+                                <option value="active">กำลังเทรน (Active)</option>
+                                <option value="passed">เทรนครบ 3 วัน (Passed)</option>
+                                <option value="dropout">🔴 ออกระหว่างเทรน</option>
+                                <option value="resigned">ออก/สละสิทธิ์ (Resigned)</option>
                             </select>
                         </div>
                     </div>
+                    <div class="text-right mt-3">
+                        <button onclick="clearFilters()" class="text-[10px] text-slate-400 hover:text-white transition underline"><i class="fa-solid fa-eraser mr-1"></i>ล้างตัวกรอง</button>
+                    </div>
                 </div>
                 
-                <div class="flex-1 tabl
+                <div class="flex-1 overflow-auto glass-panel rounded-xl mb-20 border-0 shadow-lg">
+                    <table class="w-full text-left border-collapse" id="mainTable">
+                        <thead class="bg-slate-900/80 backdrop-blur text-slate-400 text-[10px] font-bold uppercase sticky top-0 z-10 shadow-md">
+                            <tr>
+                                <th class="p-3 w-10 text-center">#</th>
+                                <th class="p-3">ข้อมูล & การเข้าเรียน</th>
+                                <th class="p-3 text-center hidden md:table-cell">Check-in</th>
+                                <th class="p-3 text-center w-24">สถานะ</th>
+                                <th class="p-3 text-center w-20">จัดการ</th>
+                            </tr>
+                        </thead>
+                        <tbody id="adminTable" class="divide-y divide-slate-700/50 text-sm text-slate-300">
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <div id="editModal" class="hidden fixed inset-0 z-[80] bg-black/90 backdrop-blur-sm flex items-center justify-center p-4">
+            <div class="glass-panel w-full max-w-sm
