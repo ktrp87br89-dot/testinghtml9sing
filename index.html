@@ -206,12 +206,7 @@ Export ทำจ่าย
 </div>
 </section>
 
-</main>
-
-
-
-
-<script>
+</main><script>
 
 const API_URL="https://script.google.com/macros/s/AKfycbyYYauRspNoRvkhUWKZh4c5Hp1TzhxWGu_T96TvPPMZ6p1DHJqh30Azzi_PrEcGn9dy/exec";
 
@@ -506,127 +501,66 @@ width:600
 });
 }
 
-</script><script>
+  </script><script>
 
 //////////////////////////////////////////////////////
-// LOADING OVERLAY
+// LOADING OVERLAY (Premium UX)
 //////////////////////////////////////////////////////
 
 const loadingOverlay=document.createElement("div");
-loadingOverlay.style.position="fixed";
-loadingOverlay.style.inset="0";
-loadingOverlay.style.background="rgba(0,0,0,.6)";
-loadingOverlay.style.display="none";
-loadingOverlay.style.alignItems="center";
-loadingOverlay.style.justifyContent="center";
-loadingOverlay.style.zIndex="9999";
 loadingOverlay.innerHTML=`
-<div style="background:#0f172a;padding:20px;border-radius:15px">
-<i class="fa fa-spinner fa-spin fa-2x text-cyan-400"></i>
+<div id="loadingScreen" 
+class="hidden fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-50">
+<div class="animate-spin rounded-full h-16 w-16 border-b-2 border-cyan-400"></div>
 </div>`;
 document.body.appendChild(loadingOverlay);
 
-function showLoading(){loadingOverlay.style.display="flex";}
-function hideLoading(){loadingOverlay.style.display="none";}
+function showLoading(){ document.getElementById("loadingScreen").classList.remove("hidden"); }
+function hideLoading(){ document.getElementById("loadingScreen").classList.add("hidden"); }
 
 //////////////////////////////////////////////////////
-// ENHANCED API WRAPPER
+// OVERRIDE API WITH LOADING
 //////////////////////////////////////////////////////
 
-async function api(payload){
+const originalApi=api;
+api=async function(payload){
 showLoading();
-const r=await fetch(API_URL,{method:"POST",body:JSON.stringify(payload)});
-const data=await r.json();
+const r=await originalApi(payload);
 hideLoading();
-return data;
-}
+return r;
+};
 
 //////////////////////////////////////////////////////
-// DATE FILTER ADDITION
+// MOBILE CARD VIEW AUTO SWITCH
 //////////////////////////////////////////////////////
 
-const dateFilterContainer=document.createElement("div");
-dateFilterContainer.className="glass p-4 rounded-xl shadow-xl grid md:grid-cols-2 gap-4";
-dateFilterContainer.innerHTML=`
-<input type="date" id="filterStart" class="p-3 rounded bg-slate-800">
-<input type="date" id="filterEnd" class="p-3 rounded bg-slate-800">
-`;
-document.querySelector("#page-admin .space-y-6").insertBefore(
-dateFilterContainer,
-document.querySelector("#page-admin .space-y-6").children[2]
-);
-
-function applyFilters(){
-const name=filterName.value.toLowerCase();
-const team=filterTeam.value.toLowerCase();
-const status=filterStatus.value;
-const start=filterStart.value;
-const end=filterEnd.value;
-
-let filtered=adminData.filter(u=>{
-
-let matchName=u.name.toLowerCase().includes(name) ||
-u.nickname.toLowerCase().includes(name);
-
-let matchTeam=u.team.toLowerCase().includes(team);
-
-let matchStatus=status==="all"||u.status===status;
-
-let matchDate=true;
-
-if(start||end){
-let parts=u.timestamp.split(" ");
-let dateParts=parts[0].split("/");
-let rowDate=new Date(dateParts[2],dateParts[1]-1,dateParts[0]);
-
-if(start && rowDate<new Date(start)) matchDate=false;
-if(end && rowDate>new Date(end)) matchDate=false;
+function isMobile(){
+return window.innerWidth < 768;
 }
 
-return matchName && matchTeam && matchStatus && matchDate;
+window.addEventListener("resize",()=>{
+if(currentRole) renderTable(adminData);
 });
 
-renderTable(filtered);
+//////////////////////////////////////////////////////
+// OVERRIDE TABLE RENDER FOR MOBILE
+//////////////////////////////////////////////////////
+
+const originalRenderTable=renderTable;
+renderTable=function(data){
+
+if(isMobile()){
+renderMobileCards(data);
+}else{
+originalRenderTable(data);
 }
 
-//////////////////////////////////////////////////////
-// MOBILE CARD VIEW
-//////////////////////////////////////////////////////
+};
 
-function renderTable(data){
+function renderMobileCards(data){
 
 adminTable.innerHTML="";
 
-if(window.innerWidth<768){
-data.forEach(u=>{
-
-let attended=0;
-if(u.d1)attended++;
-if(u.d2)attended++;
-if(u.d3)attended++;
-
-adminTable.innerHTML+=`
-<tr>
-<td colspan="5" class="p-3">
-<div class="glass p-4 rounded-xl mb-3">
-<div class="font-bold">${u.name}</div>
-<div class="text-xs text-slate-400">${u.nickname}</div>
-<div class="text-sm mt-2">ทีม: ${u.team}</div>
-<div class="text-sm">เข้าเรียน: ${attended}/3</div>
-<div class="mt-2 text-sm ${u.status==="Passed"?"text-emerald-400":
-["Resigned","New Job"].includes(u.status)?"text-red-400":"text-blue-400"}">
-${u.status}
-</div>
-</div>
-</td>
-</tr>
-`;
-});
-return;
-}
-
-// desktop table (fallback to original renderer from part 2)
-adminTable.innerHTML="";
 data.forEach(u=>{
 
 let attended=0;
@@ -642,22 +576,29 @@ let actionButtons="";
 
 if(currentRole==="superadmin"){
 actionButtons=`
-<button onclick="openEdit(${u.row})" class="text-cyan-400 mr-2"><i class="fa fa-pen"></i></button>
+<div class="flex gap-4 mt-3">
+<button onclick="openEdit(${u.row})" class="text-cyan-400"><i class="fa fa-pen"></i></button>
 <button onclick="deleteUser(${u.row})" class="text-red-400"><i class="fa fa-trash"></i></button>
-`;
+</div>`;
 }else{
 actionButtons=`
+<div class="flex gap-4 mt-3">
 <button onclick="openEdit(${u.row})" class="text-cyan-400"><i class="fa fa-pen"></i></button>
-`;
+</div>`;
 }
 
 adminTable.innerHTML+=`
-<tr class="table-row border-b border-slate-800">
-<td class="p-3">${u.prefix||""} ${u.name}<div class="text-xs text-slate-400">${u.nickname}</div></td>
-<td class="p-3">${u.team}</td>
-<td class="p-3 text-center">${attended}/3</td>
-<td class="p-3 ${statusColor}">${u.status}</td>
-<td class="p-3 text-center">${actionButtons}</td>
+<tr>
+<td class="p-3">
+<div class="glass p-4 rounded-xl mb-4">
+<div class="font-bold">${u.prefix||""} ${u.name}</div>
+<div class="text-xs text-slate-400">${u.nickname}</div>
+<div class="text-sm mt-2">ทีม: ${u.team}</div>
+<div class="text-sm">เข้าเรียน: ${attended}/3</div>
+<div class="${statusColor} mt-1 font-semibold">${u.status}</div>
+${actionButtons}
+</div>
+</td>
 </tr>
 `;
 });
@@ -665,37 +606,79 @@ adminTable.innerHTML+=`
 }
 
 //////////////////////////////////////////////////////
-// SMOOTH WINDOW RESIZE UPDATE
+// ADVANCED DROPOUT HIGHLIGHT
 //////////////////////////////////////////////////////
 
-window.addEventListener("resize",()=>{
-renderTable(adminData);
-});
+const originalUpdateDashboard=updateDashboard;
+updateDashboard=function(){
 
-//////////////////////////////////////////////////////
-// ENHANCED DROPOUT HIGHLIGHT
-//////////////////////////////////////////////////////
+originalUpdateDashboard();
 
-function highlightDropout(u){
-
+adminData.forEach(u=>{
 let attended=0;
 if(u.d1)attended++;
 if(u.d2)attended++;
 if(u.d3)attended++;
 
-return attended>0 && attended<3 &&
-["Resigned","New Job"].includes(u.status);
+if(attended>0 && attended<3 && ["Resigned","New Job"].includes(u.status)){
+console.log("Dropout:",u.name);
+}
+});
+
+};
+
+//////////////////////////////////////////////////////
+// DATE FILTER (Registration Date)
+//////////////////////////////////////////////////////
+
+const dateFilter=document.createElement("input");
+dateFilter.type="date";
+dateFilter.id="filterDate";
+dateFilter.className="p-3 rounded bg-slate-800";
+filterStatus.parentNode.insertBefore(dateFilter,filterStatus);
+
+function applyFilters(){
+
+const name=filterName.value.toLowerCase();
+const team=filterTeam.value.toLowerCase();
+const status=filterStatus.value;
+const dateValue=dateFilter.value;
+
+let filtered=adminData.filter(u=>{
+
+let matchName=u.name.toLowerCase().includes(name) ||
+u.nickname.toLowerCase().includes(name);
+
+let matchTeam=u.team.toLowerCase().includes(team);
+
+let matchStatus=status==="all"||u.status===status;
+
+let matchDate=true;
+if(dateValue){
+matchDate=u.timestamp.includes(dateValue.split("-").reverse().join("/"));
+}
+
+return matchName && matchTeam && matchStatus && matchDate;
+
+});
+
+renderTable(filtered);
+
 }
 
 //////////////////////////////////////////////////////
-// AUTO REFRESH EVERY 60s (Enterprise Feature)
+// PREMIUM ANIMATION ON LOAD
 //////////////////////////////////////////////////////
 
-setInterval(()=>{
-if(currentRole){
-adminAccess();
-}
-},60000);
+document.addEventListener("DOMContentLoaded",()=>{
+document.body.classList.add("fade");
+});
+
+//////////////////////////////////////////////////////
+// SMOOTH SCROLL
+//////////////////////////////////////////////////////
+
+document.documentElement.style.scrollBehavior="smooth";
 
 </script>
 
