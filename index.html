@@ -9,6 +9,7 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     
@@ -53,15 +54,47 @@
         .nav-btn.active { background: rgba(56, 189, 248, 0.1); color: #38bdf8; border-bottom: 2px solid #38bdf8; }
         .font-digital { font-family: 'Chakra Petch', sans-serif; }
         .text-glow { text-shadow: 0 0 20px rgba(6, 182, 212, 0.5); }
-        .custom-checkbox { width: 20px; height: 20px; accent-color: #0ea5e9; cursor: pointer; border-radius: 4px; }
-        .table-container { overflow-x: auto; -webkit-overflow-scrolling: touch; }
         
-        /* แก้ปัญหา Tailwind hidden + flex ชนกันบนมือถือ */
-        .tab-content { display: none; }
-        .tab-content.active { display: block; }
+        .table-container { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+
+        /* สไตล์สำหรับ Mobile Card View Table */
+        @media (max-width: 768px) {
+            .table-container table { min-width: 100% !important; }
+            .table-container thead { display: none; }
+            .table-container tr {
+                display: block;
+                background: rgba(30, 41, 59, 0.6);
+                border: 1px solid rgba(255, 255, 255, 0.1);
+                border-radius: 1rem;
+                margin-bottom: 1rem;
+                padding: 0.5rem;
+                box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            }
+            .table-container td {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                padding: 0.75rem 0.5rem;
+                border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+                text-align: right;
+                width: 100% !important;
+            }
+            .table-container td:last-child { border-bottom: none; }
+            .table-container td::before {
+                content: attr(data-label);
+                font-weight: 600;
+                color: #94a3b8;
+                font-family: 'Prompt', sans-serif;
+                text-transform: uppercase;
+                font-size: 0.7rem;
+                text-align: left;
+                margin-right: 1rem;
+                flex-shrink: 0;
+            }
+        }
     </style>
 </head>
-<body class="flex flex-col h-screen overflow-hidden text-slate-200" onload="startTime()">
+<body class="flex flex-col h-screen overflow-hidden text-slate-200" onload="initApp()">
 
     <header class="glass-panel sticky top-0 z-50 rounded-b-3xl mx-2 mt-2 px-6 py-4 shadow-glow mb-4">
         <div class="flex justify-between items-center">
@@ -90,35 +123,35 @@
             <p class="text-xs text-cyan-400 font-header tracking-widest animate-pulse">PROCESSING...</p>
         </div>
 
-        <section id="page-register" class="tab-content active max-w-md mx-auto animate-fade-in">
+        <section id="page-register" class="max-w-md mx-auto animate-fade-in">
             <div class="glass-panel p-6 rounded-2xl relative overflow-hidden group">
                 <div class="absolute top-0 right-0 w-40 h-40 bg-cyan-500/10 rounded-full blur-3xl -mr-10 -mt-10 pointer-events-none group-hover:bg-cyan-500/20 transition duration-700"></div>
                 <h2 class="text-lg font-header font-bold text-white mb-6 flex items-center gap-2"><span class="w-1 h-5 bg-cyan-400 rounded-full"></span> ลงทะเบียนพนักงานใหม่</h2>
                 <form id="regForm" onsubmit="handleRegister(event)" class="space-y-4 relative z-10">
                     <div class="grid grid-cols-3 gap-3">
-                        <div><label class="text-[10px] text-slate-400 font-bold mb-1.5 block ml-1">คำนำหน้า</label><select name="prefix" class="w-full px-3 py-2.5 rounded-xl glass-input text-sm focus:ring-0"><option class="text-slate-900">นาย</option><option class="text-slate-900">นาง</option><option class="text-slate-900">นางสาว</option></select></div>
-                        <div class="col-span-2"><label class="text-[10px] text-slate-400 font-bold mb-1.5 block ml-1">ชื่อ-นามสกุล</label><input type="text" id="regName" name="name" required class="w-full px-3 py-2.5 rounded-xl glass-input text-sm placeholder-slate-600" placeholder="เว้นวรรคระหว่างชื่อและนามสกุล"></div>
+                        <div><label class="text-[10px] text-slate-400 font-bold mb-1.5 block ml-1">คำนำหน้า</label><select id="regPrefix" name="prefix" class="w-full px-3 py-2.5 rounded-xl glass-input text-sm focus:ring-0"><option class="text-slate-900">นาย</option><option class="text-slate-900">นาง</option><option class="text-slate-900">นางสาว</option></select></div>
+                        <div class="col-span-2"><label class="text-[10px] text-slate-400 font-bold mb-1.5 block ml-1">ชื่อ-นามสกุล</label><input type="text" id="regName" name="name" required class="w-full px-3 py-2.5 rounded-xl glass-input text-sm placeholder-slate-600" placeholder="ระบุทั้งชื่อและนามสกุล"></div>
                     </div>
                     <div class="grid grid-cols-2 gap-3">
-                        <div><label class="text-[10px] text-slate-400 font-bold mb-1.5 block ml-1">ชื่อเล่น</label><input type="text" name="nickname" required class="w-full px-3 py-2.5 rounded-xl glass-input text-sm"></div>
-                        <div><label class="text-[10px] text-slate-400 font-bold mb-1.5 block ml-1">เบอร์โทร</label><input type="tel" id="regPhone" name="phone" required pattern="[0-9]{10}" class="w-full px-3 py-2.5 rounded-xl glass-input text-sm" placeholder="ตัวเลข 10 หลัก"></div>
+                        <div><label class="text-[10px] text-slate-400 font-bold mb-1.5 block ml-1">ชื่อเล่น</label><input type="text" id="regNickname" name="nickname" required class="w-full px-3 py-2.5 rounded-xl glass-input text-sm"></div>
+                        <div><label class="text-[10px] text-slate-400 font-bold mb-1.5 block ml-1">เบอร์โทร</label><input type="tel" id="regPhone" name="phone" required class="w-full px-3 py-2.5 rounded-xl glass-input text-sm" placeholder="ตัวเลข 10 หลัก"></div>
                     </div>
                     <div>
                         <label class="text-[10px] text-slate-400 font-bold mb-1.5 block ml-1">แผนก</label>
-                        <select name="dept" class="w-full px-3 py-2.5 rounded-xl glass-input text-sm">
+                        <select id="regDept" name="dept" class="w-full px-3 py-2.5 rounded-xl glass-input text-sm">
                             <option value="Telesales Product" class="text-slate-900">Telesales Product</option><option value="Telesales Insurance" class="text-slate-900">Telesales Insurance</option><option value="Back Office" class="text-slate-900">Back Office</option>
                         </select>
                     </div>
                     <div class="grid grid-cols-2 gap-3">
-                        <div><label class="text-[10px] text-slate-400 font-bold mb-1.5 block ml-1">ทีม</label><input type="text" name="team" class="w-full px-3 py-2.5 rounded-xl glass-input text-sm"></div>
-                        <div><label class="text-[10px] text-slate-400 font-bold mb-1.5 block ml-1">ผู้แนะนำ</label><input type="text" name="recruiter" class="w-full px-3 py-2.5 rounded-xl glass-input text-sm"></div>
+                        <div><label class="text-[10px] text-slate-400 font-bold mb-1.5 block ml-1">ทีม</label><input type="text" id="regTeam" name="team" class="w-full px-3 py-2.5 rounded-xl glass-input text-sm"></div>
+                        <div><label class="text-[10px] text-slate-400 font-bold mb-1.5 block ml-1">ผู้แนะนำ</label><input type="text" id="regRecruiter" name="recruiter" class="w-full px-3 py-2.5 rounded-xl glass-input text-sm"></div>
                     </div>
                     <button type="submit" class="w-full mt-4 py-3 bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500 text-white font-header font-medium rounded-xl shadow-lg shadow-cyan-900/20 transition-all transform active:scale-[0.98]">ยืนยันข้อมูล</button>
                 </form>
             </div>
         </section>
 
-        <section id="page-checkin" class="tab-content max-w-md mx-auto pt-4">
+        <section id="page-checkin" class="hidden max-w-md mx-auto pt-4">
             <div class="glass-panel p-8 rounded-2xl text-center relative overflow-hidden">
                 <div class="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-transparent via-cyan-500 to-transparent opacity-50"></div>
                 <div class="w-20 h-20 bg-slate-800/50 rounded-2xl mx-auto flex items-center justify-center mb-6 border border-slate-700 shadow-inner rotate-3 hover:rotate-0 transition duration-500">
@@ -146,15 +179,15 @@
             </div>
         </section>
 
-        <section id="page-admin" class="tab-content pb-10">
+        <section id="page-admin" class="hidden h-full flex flex-col">
             <div id="adminLogin" class="max-w-xs mx-auto glass-panel p-8 rounded-2xl text-center mt-10 border border-red-500/20">
                 <div class="w-14 h-14 bg-red-500/10 rounded-full flex items-center justify-center mx-auto mb-4 border border-red-500/20"><i class="fa-solid fa-shield-cat text-2xl text-red-400"></i></div>
                 <h3 class="text-white font-header font-bold mb-6">Restricted Area</h3>
-                <input type="password" id="adminPass" class="w-full px-4 py-3 rounded-xl glass-input text-center mb-4 text-sm font-mono tracking-widest" placeholder="Admin Password">
-                <button onclick="adminAccess()" class="w-full py-3 bg-red-600 hover:bg-red-500 text-white rounded-xl font-bold text-sm transition shadow-lg shadow-red-900/30">เข้าสู่ระบบ</button>
+                <input type="password" id="adminPass" class="w-full px-4 py-3 rounded-xl glass-input text-center mb-4 text-sm" placeholder="Admin Password">
+                <button onclick="adminAccess()" class="w-full py-2.5 bg-red-600 hover:bg-red-500 text-white rounded-xl font-bold text-sm transition shadow-lg shadow-red-900/30">เข้าสู่ระบบ (รหัส: admin)</button>
             </div>
 
-            <div id="adminDashboard" class="hidden flex-col w-full">
+            <div id="adminDashboard" class="hidden flex-1 flex flex-col">
                 <div class="glass-panel p-4 rounded-xl mb-4 flex flex-col md:flex-row gap-4 items-center">
                     <div class="w-32 h-32 relative">
                         <canvas id="statusChart"></canvas>
@@ -182,44 +215,56 @@
                 <div class="flex justify-between items-center mb-3 px-1">
                     <h2 class="text-white font-header font-bold text-lg flex items-center gap-2"><i class="fa-solid fa-database text-cyan-400"></i> ฐานข้อมูล</h2>
                     <div class="flex gap-2 flex-wrap justify-end">
-                        <button onclick="exportToExcel()" class="text-[10px] bg-[#107c41] border border-[#185c37] hover:bg-[#185c37] text-white px-3 py-1.5 rounded-lg transition flex items-center gap-1 shadow-lg shadow-green-900/50"><i class="fa-solid fa-file-excel"></i> Excel</button>
-                        <button onclick="toggleFilterPanel()" class="text-[10px] bg-slate-800 border border-slate-600 hover:bg-cyan-900 hover:border-cyan-500 text-white px-3 py-1.5 rounded-lg transition flex items-center gap-1"><i class="fa-solid fa-filter"></i> ตัวกรอง</button>
-                        <button onclick="toggleSelectAll()" class="text-[10px] bg-slate-800 border border-slate-600 hover:bg-slate-700 text-white px-3 py-1.5 rounded-lg transition">Select All</button>
-                        <button onclick="loadAdminData()" class="text-[10px] bg-slate-800 border border-slate-600 hover:bg-slate-700 text-white px-3 py-1.5 rounded-lg transition"><i class="fa-solid fa-rotate"></i></button>
-                        <button onclick="openPaymentModal()" class="text-[10px] bg-emerald-700 border border-emerald-500 hover:bg-emerald-600 text-white px-3 py-1.5 rounded-lg transition flex items-center gap-1 shadow-lg shadow-emerald-900/50"><i class="fa-solid fa-money-bill-wave"></i> สรุปทำจ่าย</button>
+                        <button onclick="exportToExcel()" class="text-[10px] bg-[#107c41] border border-[#185c37] hover:bg-[#185c37] text-white px-3 py-1.5 rounded-lg transition flex items-center gap-1 shadow-lg shadow-green-900/50"><i class="fa-solid fa-file-excel"></i> Export</button>
                     </div>
                 </div>
+                
+                <div class="flex-1 table-container glass-panel rounded-xl mb-20 border-0 shadow-lg">
+                    <table class="w-full min-w-[600px] text-left border-collapse">
+                        <thead class="bg-slate-900/80 backdrop-blur text-slate-400 text-[10px] font-bold uppercase sticky top-0 z-10 shadow-md">
+                            <tr>
+                                <th class="p-3 w-10 text-center">#</th>
+                                <th class="p-3">ข้อมูล & การเข้าเรียน</th>
+                                <th class="p-3 text-center w-24">สถานะ</th>
+                                <th class="p-3 text-center w-20">จัดการ</th>
+                            </tr>
+                        </thead>
+                        <tbody id="adminTable" class="divide-y divide-slate-700/50 text-sm text-slate-300">
+                            </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+    </main>
 
-                <div id="filterPanel" class="hidden glass-panel p-4 rounded-xl mb-4 border-t-2 border-cyan-500/50 animate-fade-in shadow-xl">
-                    <div class="grid grid-cols-2 gap-3 mb-3">
-                        <div>
-                            <label class="text-[10px] text-cyan-400 font-bold mb-1.5 block uppercase tracking-wide">ตั้งแต่วันที่เริ่มเทรน</label>
-                            <input type="date" id="filterStart" class="w-full p-2.5 rounded-lg glass-input text-xs font-mono" onchange="applyAdminFilters()">
-                        </div>
-                        <div>
-                            <label class="text-[10px] text-cyan-400 font-bold mb-1.5 block uppercase tracking-wide">ถึงวันที่</label>
-                            <input type="date" id="filterEnd" class="w-full p-2.5 rounded-lg glass-input text-xs font-mono" onchange="applyAdminFilters()">
-                        </div>
-                    </div>
-                    <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
-                        <div class="col-span-2 md:col-span-1">
-                            <label class="text-[10px] text-slate-400 font-bold mb-1.5 block uppercase">ค้นหาชื่อ/ชื่อเล่น</label>
-                            <input type="text" id="filterName" class="w-full p-2.5 rounded-lg glass-input text-xs" placeholder="พิมพ์ชื่อ..." onkeyup="applyAdminFilters()">
-                        </div>
-                        <div>
-                            <label class="text-[10px] text-slate-400 font-bold mb-1.5 block uppercase">ทีม</label>
-                            <input type="text" id="filterTeam" class="w-full p-2.5 rounded-lg glass-input text-xs" placeholder="พิมพ์ทีม..." onkeyup="applyAdminFilters()">
-                        </div>
-                        <div class="col-span-2">
-                            <label class="text-[10px] text-slate-400 font-bold mb-1.5 block uppercase">สถานะ</label>
-                            <select id="filterStatus" class="w-full p-2.5 rounded-lg glass-input text-xs" onchange="applyAdminFilters()">
-                                <option value="all">ทั้งหมด (All)</option>
-                                <option value="active">กำลังเทรน (Active)</option>
-                                <option value="passed">เทรนครบ 3 วัน (Passed)</option>
-                                <option value="dropout">🔴 ออกระหว่างเทรน</option>
-                                <option value="resigned">ออก/สละสิทธิ์ (Resigned)</option>
-                            </select>
-                        </div>
-                    </div>
-                    <div class="text-right mt-3">
-                        <button onclick="clearFilters()" class="text-[10px] text-slate-400 hover:text-white transition 
+    <script>
+        // **********************************************
+        // 🔴 เชื่อมต่อ URL WEB APP (Apps Script) ของคุณ
+        // **********************************************
+        const API_URL = "https://script.google.com/macros/s/AKfycbyYYauRspNoRvkhUWKZh4c5Hp1TzhxWGu_T96TvPPMZ6p1DHJqh30Azzi_PrEcGn9dy/exec"; 
+        // **********************************************
+
+        function initApp() {
+            startTime();
+        }
+
+        // ระบบนาฬิกา
+        function startTime() {
+            const today = new Date();
+            const timeOptions = { hour: '2-digit', minute: '2-digit', hour12: false };
+            const dateOptions = { day: '2-digit', month: 'short', year: 'numeric' };
+            
+            document.getElementById('clockTime').innerText = today.toLocaleTimeString('en-US', timeOptions);
+            document.getElementById('clockDate').innerText = today.toLocaleDateString('en-GB', dateOptions);
+            setTimeout(startTime, 1000);
+        }
+
+        // ระบบเปลี่ยนหน้า (Tabs)
+        function switchTab(tabId) {
+            document.getElementById('page-register').classList.add('hidden');
+            document.getElementById('page-checkin').classList.add('hidden');
+            document.getElementById('page-admin').classList.add('hidden');
+            
+            document.getElementById('nav-register').classList.remove('active');
+            document.getElementById('nav-checkin').classList.remove('active');
+            document.getElementById('nav-admin')
